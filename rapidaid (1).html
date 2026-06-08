@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RapidAid — Book Ambulance Fast</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css" />
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', sans-serif; background: #f9fafb; color: #111; }
+
+    .topbar { background: #b91c1c; color: white; padding: 12px 20px; display: flex; align-items: center; justify-content: space-between; }
+    .topbar .logo { font-size: 20px; font-weight: 700; letter-spacing: -0.5px; }
+    .topbar .helpline { font-size: 13px; background: rgba(255,255,255,0.15); padding: 5px 12px; border-radius: 999px; }
+
+    .hero { background: linear-gradient(135deg, #b91c1c 0%, #ef4444 100%); color: white; padding: 2.5rem 1.5rem 3rem; text-align: center; }
+    .hero-badge { display: inline-flex; align-items: center; gap: 6px; background: rgba(255,255,255,0.18); border: 1px solid rgba(255,255,255,0.3); border-radius: 999px; padding: 4px 14px; font-size: 12px; margin-bottom: 1rem; }
+    .hero h1 { font-size: 32px; font-weight: 800; margin-bottom: 0.5rem; }
+    .hero p { font-size: 16px; opacity: 0.9; margin-bottom: 1.5rem; }
+    .eta-row { display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; margin-bottom: 1.5rem; }
+    .eta-chip { background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3); border-radius: 999px; padding: 7px 18px; font-size: 13px; display: flex; align-items: center; gap: 6px; }
+    .eta-chip strong { font-size: 15px; }
+    .book-btn { background: white; color: #b91c1c; border: none; border-radius: 999px; padding: 14px 36px; font-size: 16px; font-weight: 700; cursor: pointer; transition: transform 0.15s; }
+    .book-btn:hover { transform: scale(1.04); }
+
+    .container { max-width: 680px; margin: 0 auto; padding: 1.5rem; }
+
+    .stats-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 1.5rem 0; }
+    .stat-card { background: white; border: 1px solid #e5e7eb; border-radius: 12px; padding: 1rem; text-align: center; }
+    .stat-num { font-size: 22px; font-weight: 700; color: #b91c1c; }
+    .stat-label { font-size: 12px; color: #6b7280; margin-top: 2px; }
+
+    .section-title { font-size: 18px; font-weight: 600; color: #111; margin-bottom: 1rem; }
+
+    .types-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 1.5rem; }
+    @media(min-width: 480px){ .types-grid { grid-template-columns: repeat(4, 1fr); } }
+    .type-card { background: white; border: 1.5px solid #e5e7eb; border-radius: 12px; padding: 1rem; text-align: center; cursor: pointer; transition: border-color 0.15s, background 0.15s; }
+    .type-card:hover, .type-card.selected { border-color: #dc2626; background: #fff5f5; }
+    .type-card .icon { font-size: 28px; margin-bottom: 8px; }
+    .type-card .name { font-size: 13px; font-weight: 600; }
+    .type-card .price { font-size: 12px; color: #6b7280; margin-top: 2px; }
+
+    .booking-form { background: white; border: 1px solid #e5e7eb; border-radius: 12px; padding: 1.5rem; margin-bottom: 1.5rem; }
+    .form-row { margin-bottom: 1rem; }
+    .form-label { font-size: 13px; color: #6b7280; margin-bottom: 6px; display: block; font-weight: 500; }
+    .form-input { width: 100%; padding: 11px 14px; border: 1.5px solid #e5e7eb; border-radius: 8px; font-size: 14px; font-family: inherit; color: #111; background: #f9fafb; transition: border-color 0.15s; }
+    .form-input:focus { outline: none; border-color: #dc2626; background: white; }
+    .form-row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .submit-btn { width: 100%; background: #dc2626; color: white; border: none; border-radius: 10px; padding: 14px; font-size: 16px; font-weight: 700; cursor: pointer; transition: background 0.15s; margin-top: 0.5rem; }
+    .submit-btn:hover { background: #b91c1c; }
+
+    .success-box { display: none; background: #f0fdf4; border: 1.5px solid #86efac; border-radius: 12px; padding: 1.5rem; text-align: center; margin-bottom: 1.5rem; }
+    .success-box.show { display: block; }
+    .success-box h3 { color: #15803d; font-size: 18px; margin-bottom: 0.5rem; }
+    .success-box p { color: #166534; font-size: 14px; }
+    .tracker { display: flex; justify-content: space-between; align-items: flex-start; margin-top: 1.2rem; position: relative; }
+    .tracker::before { content: ''; position: absolute; top: 14px; left: 10%; right: 10%; height: 2px; background: #86efac; }
+    .t-step { display: flex; flex-direction: column; align-items: center; gap: 4px; z-index: 1; }
+    .t-dot { width: 28px; height: 28px; border-radius: 50%; background: #22c55e; display: flex; align-items: center; justify-content: center; color: white; font-size: 13px; }
+    .t-dot.pending { background: #d1fae5; color: #22c55e; border: 1.5px solid #86efac; }
+    .t-lbl { font-size: 11px; color: #166534; text-align: center; max-width: 60px; line-height: 1.3; }
+
+    .steps-list { display: flex; flex-direction: column; gap: 14px; margin-bottom: 1.5rem; }
+    .step-item { display: flex; gap: 14px; align-items: flex-start; }
+    .step-num { width: 34px; height: 34px; min-width: 34px; border-radius: 50%; background: #fef2f2; border: 1.5px solid #fca5a5; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; color: #dc2626; }
+    .step-text { padding-top: 4px; }
+    .step-text strong { font-size: 14px; font-weight: 600; display: block; margin-bottom: 2px; }
+    .step-text span { font-size: 13px; color: #6b7280; }
+
+    .footer { text-align: center; padding: 1.5rem; background: #1f2937; color: white; margin-top: 1rem; }
+    .footer .brand { font-size: 18px; font-weight: 700; color: #f87171; margin-bottom: 6px; }
+    .footer p { font-size: 13px; color: #9ca3af; line-height: 1.7; }
+    .footer a { color: #f87171; text-decoration: none; }
+  </style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="logo">🚑 RapidAid</div>
+  <div class="helpline">Emergency: 112</div>
+</div>
+
+<div class="hero">
+  <div class="hero-badge">⚡ India's Fastest Ambulance Network</div>
+  <h1>Book Ambulance in Minutes</h1>
+  <p>Certified ambulances dispatched instantly.<br>Available 24/7 across your city.</p>
+  <div class="eta-row">
+    <div class="eta-chip">🚑 Basic Ambulance <strong>~10 min</strong></div>
+    <div class="eta-chip">🏥 ICU Ambulance <strong>~15 min</strong></div>
+  </div>
+  <button class="book-btn" onclick="document.getElementById('book-section').scrollIntoView({behavior:'smooth'})">
+    🚑 Book Now — It's Free
+  </button>
+</div>
+
+<div class="container">
+
+  <div class="stats-row">
+    <div class="stat-card"><div class="stat-num">2,400+</div><div class="stat-label">Bookings done</div></div>
+    <div class="stat-card"><div class="stat-num">10 min</div><div class="stat-label">Avg. arrival time</div></div>
+    <div class="stat-card"><div class="stat-num">24/7</div><div class="stat-label">Always available</div></div>
+  </div>
+
+  <div class="section-title">Choose ambulance type</div>
+  <div class="types-grid">
+    <div class="type-card selected" onclick="selectType(this,'Basic')">
+      <div class="icon">🚑</div><div class="name">Basic</div><div class="price">From ₹500</div>
+    </div>
+    <div class="type-card" onclick="selectType(this,'ICU')">
+      <div class="icon">🏥</div><div class="name">ICU</div><div class="price">From ₹1,200</div>
+    </div>
+    <div class="type-card" onclick="selectType(this,'Neonatal')">
+      <div class="icon">👶</div><div class="name">Neonatal</div><div class="price">From ₹1,500</div>
+    </div>
+    <div class="type-card" onclick="selectType(this,'Mortuary')">
+      <div class="icon">🕊️</div><div class="name">Mortuary</div><div class="price">From ₹800</div>
+    </div>
+  </div>
+
+  <div class="section-title" id="book-section">Book your ambulance</div>
+  <div class="booking-form">
+    <div class="form-row">
+      <label class="form-label">Patient name</label>
+      <input class="form-input" id="pname" type="text" placeholder="Full name" />
+    </div>
+    <div class="form-row">
+      <label class="form-label">Phone number</label>
+      <input class="form-input" id="pphone" type="tel" placeholder="+91 98765 43210" />
+    </div>
+    <div class="form-row">
+      <label class="form-label">Pickup location / Address</label>
+      <input class="form-input" id="ploc" type="text" placeholder="House no, street, landmark" />
+    </div>
+    <div class="form-row-2">
+      <div>
+        <label class="form-label">City</label>
+        <input class="form-input" id="pcity" type="text" placeholder="Hyderabad" />
+      </div>
+      <div>
+        <label class="form-label">Emergency type</label>
+        <select class="form-input" id="ptype">
+          <option>Accident</option>
+          <option>Heart attack</option>
+          <option>Breathing issue</option>
+          <option>Pregnancy</option>
+          <option>Stroke</option>
+          <option>Other</option>
+        </select>
+      </div>
+    </div>
+    <button class="submit-btn" onclick="bookAmbulance()">🚑 Confirm Booking</button>
+  </div>
+
+  <div class="success-box" id="success-box">
+    <h3>✅ Ambulance Booked Successfully!</h3>
+    <p id="success-msg">Your ambulance is on the way.</p>
+    <div class="tracker">
+      <div class="t-step"><div class="t-dot">✓</div><div class="t-lbl">Booking confirmed</div></div>
+      <div class="t-step"><div class="t-dot">✓</div><div class="t-lbl">Driver assigned</div></div>
+      <div class="t-step"><div class="t-dot">🚑</div><div class="t-lbl">On the way</div></div>
+      <div class="t-step"><div class="t-dot pending">🏠</div><div class="t-lbl">Arrived</div></div>
+    </div>
+  </div>
+
+  <div class="section-title">How it works</div>
+  <div class="steps-list">
+    <div class="step-item"><div class="step-num">1</div><div class="step-text"><strong>Enter your location</strong><span>Tell us where to come — any address or landmark</span></div></div>
+    <div class="step-item"><div class="step-num">2</div><div class="step-text"><strong>Choose ambulance type</strong><span>Basic, ICU, Neonatal — pick what the patient needs</span></div></div>
+    <div class="step-item"><div class="step-num">3</div><div class="step-text"><strong>Confirm booking</strong><span>Driver details sent to your phone instantly</span></div></div>
+    <div class="step-item"><div class="step-num">4</div><div class="step-text"><strong>Ambulance arrives fast</strong><span>Basic in ~10 min, ICU in ~15 min</span></div></div>
+  </div>
+
+</div>
+
+<div class="footer">
+  <div class="brand">🚑 RapidAid</div>
+  <p>© 2026 RapidAid. All rights reserved. Built in India 🇮🇳<br>
+  Emergency Helpline: <a href="tel:112">112</a> &nbsp;|&nbsp; 
+  Contact: <a href="mailto:hello@rapidaid.in">hello@rapidaid.in</a></p>
+</div>
+
+<script>
+  let selectedType = 'Basic';
+  function selectType(el, name) {
+    document.querySelectorAll('.type-card').forEach(c => c.classList.remove('selected'));
+    el.classList.add('selected');
+    selectedType = name;
+  }
+  function bookAmbulance() {
+    const name = document.getElementById('pname').value.trim();
+    const phone = document.getElementById('pphone').value.trim();
+    const loc = document.getElementById('ploc').value.trim();
+    if (!name || !phone || !loc) {
+      alert('Please fill in your name, phone number, and pickup location.');
+      return;
+    }
+    const eta = selectedType === 'Basic' ? '~10 minutes' : '~15 minutes';
+    document.getElementById('success-msg').textContent =
+      'Ambulance (' + selectedType + ') booked for ' + name + '. ETA: ' + eta + '. We will call ' + phone + ' shortly.';
+    document.getElementById('success-box').classList.add('show');
+    document.getElementById('success-box').scrollIntoView({ behavior: 'smooth' });
+  }
+</script>
+
+</body>
+</html>
