@@ -15,8 +15,15 @@
     body { font-family: 'Plus Jakarta Sans', 'Segoe UI', sans-serif; background: #2a0a0a; color: #111; position: relative; }
     /* floating medical + peace symbols background */
     .bg-symbols { position: fixed; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; }
-    .bg-symbols span { position: absolute; color: rgba(255,255,255,0.04); font-size: 60px; animation: floatUp linear infinite; user-select: none; }
+    .bg-symbols span { position: absolute; color: rgba(255,255,255,0.10); font-size: 60px; animation: floatUp linear infinite; user-select: none; }
     @keyframes floatUp { 0% { transform: translateY(110vh) rotate(0deg); opacity: 0; } 10% { opacity: 1; } 90% { opacity: 1; } 100% { transform: translateY(-20vh) rotate(360deg); opacity: 0; } }
+    /* page-wide drifting clouds (fills the empty side areas) */
+    .page-clouds { position: fixed; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; }
+    .pcloud { position: absolute; background: rgba(255,255,255,0.06); border-radius: 200px; filter: blur(14px); animation: pdrift linear infinite; }
+    .pcloud::before, .pcloud::after { content: ''; position: absolute; background: rgba(255,255,255,0.06); border-radius: 200px; }
+    .pcloud::before { width: 60%; height: 150%; top: -45%; left: 14%; }
+    .pcloud::after { width: 50%; height: 130%; top: -35%; right: 14%; }
+    @keyframes pdrift { from { transform: translateX(-300px); } to { transform: translateX(110vw); } }
     /* everything above symbols */
     .topbar, .page { position: relative; z-index: 2; }
     .topbar { background: linear-gradient(90deg, #6b0f0f 0%, #991b1b 100%); color: white; padding: 12px 20px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 2px 12px rgba(0,0,0,0.3); }
@@ -76,7 +83,7 @@
     @keyframes stepR { 0%,100% { transform: rotate(-15deg); } 50% { transform: rotate(15deg); } }
     @keyframes walk-across { from { transform: translateX(-30px); } to { transform: translateX(110vw); } }
     @media (prefers-reduced-motion: reduce) {
-      .bird, .person, .bird .wing, .person .leg-l, .person .leg-r, .cloud, .light-sweep { animation: none; }
+      .bird, .person, .bird .wing, .person .leg-l, .person .leg-r, .cloud, .light-sweep, .pcloud, .bg-symbols span { animation: none; }
     }
     .hero-content { position: relative; z-index: 5; }
     .hero-badge { display:inline-flex; align-items:center; gap:8px; background:rgba(255,255,255,0.12); backdrop-filter: blur(8px); border:1px solid rgba(255,255,255,0.3); border-radius:999px; padding:7px 18px; font-size:11px; font-weight:600; margin-bottom:1.4rem; letter-spacing: 2px; text-transform: uppercase; }
@@ -182,6 +189,14 @@
   <span style="left:72%; animation-duration:23s; animation-delay:2s;">✚</span>
   <span style="left:83%; animation-duration:19s; animation-delay:7s;">☮</span>
   <span style="left:92%; animation-duration:21s; animation-delay:5s;">♡</span>
+</div>
+
+<div class="page-clouds">
+  <div class="pcloud" style="top:12%; left:0; width:160px; height:32px; animation-duration:60s; animation-delay:0s;"></div>
+  <div class="pcloud" style="top:30%; left:0; width:120px; height:24px; animation-duration:75s; animation-delay:15s;"></div>
+  <div class="pcloud" style="top:55%; left:0; width:200px; height:38px; animation-duration:90s; animation-delay:30s;"></div>
+  <div class="pcloud" style="top:70%; left:0; width:140px; height:28px; animation-duration:68s; animation-delay:8s;"></div>
+  <div class="pcloud" style="top:85%; left:0; width:170px; height:34px; animation-duration:80s; animation-delay:22s;"></div>
 </div>
 
 
