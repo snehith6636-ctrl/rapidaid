@@ -7,50 +7,97 @@
   <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: 'Segoe UI', sans-serif; background: #f9fafb; color: #111; }
-    .topbar { background: #b91c1c; color: white; padding: 12px 20px; display: flex; align-items: center; justify-content: space-between; }
-    .topbar .logo { font-size: 20px; font-weight: 700; }
+    body { font-family: 'Plus Jakarta Sans', 'Segoe UI', sans-serif; background: #2a0a0a; color: #111; position: relative; }
+    /* floating medical + peace symbols background */
+    .bg-symbols { position: fixed; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; }
+    .bg-symbols span { position: absolute; color: rgba(255,255,255,0.04); font-size: 60px; animation: floatUp linear infinite; user-select: none; }
+    @keyframes floatUp { 0% { transform: translateY(110vh) rotate(0deg); opacity: 0; } 10% { opacity: 1; } 90% { opacity: 1; } 100% { transform: translateY(-20vh) rotate(360deg); opacity: 0; } }
+    /* everything above symbols */
+    .topbar, .page { position: relative; z-index: 2; }
+    .topbar { background: linear-gradient(90deg, #6b0f0f 0%, #991b1b 100%); color: white; padding: 12px 20px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 2px 12px rgba(0,0,0,0.3); }
+    .topbar .logo { font-family: 'Playfair Display', serif; font-size: 24px; font-weight: 900; letter-spacing: -0.5px; }
     .topbar .helpline { font-size: 13px; background: rgba(255,255,255,0.15); padding: 5px 12px; border-radius: 999px; }
-    .topbar .user-btn { font-size: 13px; background: white; color: #b91c1c; padding: 5px 14px; border-radius: 999px; cursor: pointer; font-weight: 600; border: none; }
+    .topbar .user-btn { font-size: 13px; background: white; color: #991b1b; padding: 5px 14px; border-radius: 999px; cursor: pointer; font-weight: 600; border: none; }
     .page { display: none; }
     .page.active { display: block; }
     .login-wrap { max-width: 400px; margin: 3rem auto; padding: 1.5rem; }
-    .login-card { background: white; border-radius: 16px; padding: 2rem; border: 1px solid #e5e7eb; text-align: center; }
-    .login-card h2 { font-size: 22px; font-weight: 700; margin-bottom: 0.5rem; }
+    .login-card { background: white; border-radius: 16px; padding: 2rem; border: 1px solid #e5e7eb; text-align: center; box-shadow: 0 12px 40px rgba(0,0,0,0.4); }
+    .login-card h2 { font-family: 'Playfair Display', serif; font-size: 26px; font-weight: 800; margin-bottom: 0.5rem; }
     .login-card p { font-size: 14px; color: #6b7280; margin-bottom: 1.5rem; }
     .login-input { width: 100%; padding: 12px 14px; border: 1.5px solid #e5e7eb; border-radius: 8px; font-size: 15px; margin-bottom: 1rem; font-family: inherit; }
-    .login-input:focus { outline: none; border-color: #dc2626; }
-    .login-btn { width: 100%; background: #dc2626; color: white; border: none; border-radius: 10px; padding: 13px; font-size: 15px; font-weight: 700; cursor: pointer; margin-bottom: 0.5rem; }
-    .login-btn:hover { background: #b91c1c; }
+    .login-input:focus { outline: none; border-color: #991b1b; }
+    .login-btn { width: 100%; background: #991b1b; color: white; border: none; border-radius: 10px; padding: 13px; font-size: 15px; font-weight: 700; cursor: pointer; margin-bottom: 0.5rem; }
+    .login-btn:hover { background: #6b0f0f; }
     .login-msg { font-size: 13px; color: #6b7280; margin-top: 8px; }
     .login-msg.error { color: #dc2626; }
     .skip-btn { background: none; border: none; color: #6b7280; font-size: 13px; cursor: pointer; text-decoration: underline; margin-top: 8px; }
-    .hero { position: relative; background: #1e1b4b; color: white; padding: 3rem 1.5rem 3.5rem; text-align: center; overflow: hidden; min-height: 420px; display: flex; flex-direction: column; justify-content: center; }
+    .hero { position: relative; background: #1a0505; color: white; padding: 3rem 1.5rem 3.5rem; text-align: center; overflow: hidden; min-height: 420px; display: flex; flex-direction: column; justify-content: center; }
     /* video background */
     .hero-video { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 1; }
     /* dark overlay so text is readable on top of video */
-    .hero-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(180deg, rgba(30,27,75,0.55) 0%, rgba(185,28,28,0.55) 100%); z-index: 2; }
+    .hero-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle at 50% 40%, rgba(107,15,15,0.45) 0%, rgba(26,5,5,0.82) 100%); z-index: 2; }
+
+    /* drifting clouds */
+    .clouds-layer { position: absolute; top: 0; left: 0; width: 100%; height: 55%; z-index: 2; pointer-events: none; overflow: hidden; }
+    .cloud { position: absolute; background: rgba(255,255,255,0.10); border-radius: 100px; filter: blur(8px); animation: drift linear infinite; }
+    .cloud::before, .cloud::after { content: ''; position: absolute; background: rgba(255,255,255,0.10); border-radius: 100px; }
+    .cloud::before { width: 60%; height: 140%; top: -40%; left: 12%; }
+    .cloud::after { width: 50%; height: 120%; top: -30%; right: 12%; }
+    @keyframes drift { from { transform: translateX(-220px); } to { transform: translateX(110vw); } }
+
+    /* cinematic letterbox bars */
+    .cine-bar { position: absolute; left: 0; width: 100%; height: 28px; background: #000; z-index: 6; pointer-events: none; }
+    .cine-bar.top { top: 0; }
+    .cine-bar.bottom { bottom: 0; }
+    /* cinematic light sweep */
+    .light-sweep { position: absolute; top: 0; left: 0; width: 60%; height: 100%; z-index: 3; pointer-events: none; background: linear-gradient(105deg, transparent 0%, rgba(255,255,255,0.08) 50%, transparent 100%); animation: sweep 7s ease-in-out infinite; }
+    @keyframes sweep { 0% { transform: translateX(-100%); } 60%,100% { transform: translateX(250%); } }
+
+    /* flying birds layer */
+    .birds-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 3; pointer-events: none; overflow: hidden; }
+    .bird { position: absolute; width: 26px; height: 26px; opacity: 0.55; animation: fly linear infinite; }
+    .bird svg { width: 100%; height: 100%; }
+    .bird .wing { transform-origin: center; animation: flap 0.5s ease-in-out infinite; }
+    @keyframes flap { 0%,100% { transform: scaleY(1); } 50% { transform: scaleY(0.4); } }
+    @keyframes fly { 0% { transform: translateX(-60px) translateY(0); } 50% { transform: translateX(50vw) translateY(-18px); } 100% { transform: translateX(110vw) translateY(0); } }
+
+    /* walking people layer at bottom */
+    .people-layer { position: absolute; bottom: 0; left: 0; width: 100%; height: 60px; z-index: 4; pointer-events: none; overflow: hidden; }
+    .person { position: absolute; bottom: 8px; width: 16px; height: 38px; opacity: 0.45; animation: walk-across linear infinite; }
+    .person svg { width: 100%; height: 100%; }
+    .person .leg-l { transform-origin: top center; animation: stepL 0.5s ease-in-out infinite; }
+    .person .leg-r { transform-origin: top center; animation: stepR 0.5s ease-in-out infinite; }
+    @keyframes stepL { 0%,100% { transform: rotate(15deg); } 50% { transform: rotate(-15deg); } }
+    @keyframes stepR { 0%,100% { transform: rotate(-15deg); } 50% { transform: rotate(15deg); } }
+    @keyframes walk-across { from { transform: translateX(-30px); } to { transform: translateX(110vw); } }
+    @media (prefers-reduced-motion: reduce) {
+      .bird, .person, .bird .wing, .person .leg-l, .person .leg-r, .cloud, .light-sweep { animation: none; }
+    }
     .hero-content { position: relative; z-index: 5; }
-    .hero-badge { display:inline-flex; align-items:center; gap:6px; background:rgba(255,255,255,0.15); backdrop-filter: blur(8px); border:1px solid rgba(255,255,255,0.3); border-radius:999px; padding:6px 16px; font-size:12px; margin-bottom:1.2rem; letter-spacing: 0.3px; }
-    .hero h1 { font-size: 36px; font-weight: 800; margin-bottom: 0.5rem; letter-spacing: -1px; line-height: 1.1; text-shadow: 0 2px 16px rgba(0,0,0,0.5); }
-    .hero p { font-size: 15px; opacity: 0.95; margin-bottom: 1.5rem; text-shadow: 0 1px 8px rgba(0,0,0,0.5); }
+    .hero-badge { display:inline-flex; align-items:center; gap:8px; background:rgba(255,255,255,0.12); backdrop-filter: blur(8px); border:1px solid rgba(255,255,255,0.3); border-radius:999px; padding:7px 18px; font-size:11px; font-weight:600; margin-bottom:1.4rem; letter-spacing: 2px; text-transform: uppercase; }
+    .hero h1 { font-family: 'Playfair Display', serif; font-size: 46px; font-weight: 900; margin-bottom: 0.6rem; letter-spacing: -1px; line-height: 1.05; text-shadow: 0 4px 24px rgba(0,0,0,0.6); }
+    .hero p { font-size: 16px; opacity: 0.95; margin-bottom: 1.6rem; text-shadow: 0 1px 8px rgba(0,0,0,0.5); font-weight: 500; }
+    .hero-divider { width: 60px; height: 3px; background: #fbbf24; border-radius: 2px; margin: 0 auto 1.4rem; }
     .eta-row { display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; margin-bottom: 1.5rem; }
     .eta-chip { background: rgba(0,0,0,0.35); backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,0.3); border-radius: 999px; padding: 8px 18px; font-size: 13px; }
     .book-btn { background: white; color: #b91c1c; border: none; border-radius: 999px; padding: 15px 40px; font-size: 16px; font-weight: 700; cursor: pointer; box-shadow: 0 8px 24px rgba(0,0,0,0.4); transition: transform 0.15s, box-shadow 0.15s; }
     .book-btn:hover { transform: scale(1.05) translateY(-2px); box-shadow: 0 12px 32px rgba(0,0,0,0.5); }
-    .container { max-width: 680px; margin: 0 auto; padding: 1.5rem; }
+    .container { max-width: 680px; margin: -20px auto 0; padding: 1.5rem; background: #f9fafb; border-radius: 24px 24px 0 0; position: relative; z-index: 3; min-height: 60vh; }
     .stats-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 1.5rem 0; }
-    .stat-card { background: white; border: 1px solid #f1f1f1; border-radius: 16px; padding: 1.2rem 1rem; text-align: center; box-shadow: 0 2px 12px rgba(0,0,0,0.04); transition: transform 0.15s; }
+    .stat-card { background: white; border: 1px solid #f1f1f1; border-radius: 16px; padding: 1.2rem 1rem; text-align: center; box-shadow: 0 2px 12px rgba(0,0,0,0.06); transition: transform 0.15s; }
     .stat-card:hover { transform: translateY(-3px); }
-    .stat-num { font-size: 24px; font-weight: 800; color: #b91c1c; letter-spacing: -0.5px; }
+    .stat-num { font-family: 'Playfair Display', serif; font-size: 28px; font-weight: 900; color: #991b1b; letter-spacing: -0.5px; }
     .stat-label { font-size: 12px; color: #6b7280; margin-top: 4px; }
-    .section-title { font-size: 18px; font-weight: 600; margin-bottom: 1rem; margin-top: 1.5rem; }
+    .section-title { font-family: 'Playfair Display', serif; font-size: 24px; font-weight: 800; margin-bottom: 1rem; margin-top: 1.5rem; color: #1a0505; letter-spacing: -0.5px; }
     .types-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 1.5rem; }
     @media(min-width:480px){ .types-grid { grid-template-columns: repeat(4,1fr); } }
     .type-card { background: white; border: 1.5px solid #e5e7eb; border-radius: 12px; padding: 1rem; text-align: center; cursor: pointer; transition: all 0.15s; }
-    .type-card:hover, .type-card.selected { border-color: #dc2626; background: #fff5f5; }
+    .type-card:hover, .type-card.selected { border-color: #991b1b; background: #fef2f2; }
     .type-card .icon { font-size: 28px; margin-bottom: 8px; }
     .type-card .name { font-size: 13px; font-weight: 600; }
     .type-card .price { font-size: 12px; color: #6b7280; margin-top: 2px; }
@@ -91,12 +138,31 @@
     .booking-type { font-size: 12px; background: #fef2f2; color: #dc2626; padding: 2px 8px; border-radius: 999px; font-weight: 500; }
     .booking-details { font-size: 12px; color: #6b7280; margin-top: 4px; line-height: 1.6; }
     .no-bookings { text-align: center; color: #6b7280; font-size: 14px; padding: 1rem; }
-    .footer { text-align: center; padding: 1.5rem; background: #1f2937; color: white; margin-top: 1rem; }
+    .footer { text-align: center; padding: 1.5rem; background: linear-gradient(90deg, #1a0505 0%, #6b0f0f 100%); color: white; margin-top: 1rem; position: relative; z-index: 2; }
     .footer .brand { font-size: 18px; font-weight: 700; color: #f87171; margin-bottom: 6px; }
     .footer p { font-size: 13px; color: #9ca3af; line-height: 1.7; }
     .nav-tabs { display: flex; gap: 8px; margin-bottom: 1rem; flex-wrap: wrap; }
     .nav-tab { background: #f3f4f6; border: none; border-radius: 8px; padding: 8px 16px; font-size: 13px; cursor: pointer; font-weight: 500; }
-    .nav-tab.active { background: #dc2626; color: white; }
+    .nav-tab.active { background: #991b1b; color: white; }
+    /* How it works */
+    .how-section { margin: 2rem 0 1rem; }
+    .how-grid { display: flex; flex-direction: column; gap: 12px; }
+    .how-step { display: flex; gap: 14px; align-items: flex-start; background: white; border: 1px solid #f1f1f1; border-radius: 14px; padding: 1rem 1.1rem; box-shadow: 0 2px 10px rgba(0,0,0,0.05); transition: transform 0.15s; }
+    .how-step:hover { transform: translateX(4px); }
+    .how-num { width: 38px; height: 38px; min-width: 38px; border-radius: 50%; background: linear-gradient(135deg, #6b0f0f, #b91c1c); color: white; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 700; }
+    .how-text strong { font-size: 14px; font-weight: 600; display: block; margin-bottom: 2px; color: #1a0505; }
+    .how-text span { font-size: 13px; color: #6b7280; line-height: 1.5; }
+    /* Why us features */
+    .why-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 1rem; }
+    .why-card { background: white; border: 1px solid #f1f1f1; border-radius: 14px; padding: 1.1rem; text-align: center; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+    .why-icon { font-size: 30px; margin-bottom: 6px; }
+    .why-title { font-size: 14px; font-weight: 600; color: #1a0505; margin-bottom: 3px; }
+    .why-desc { font-size: 12px; color: #6b7280; line-height: 1.5; }
+    /* CTA banner */
+    .cta-banner { background: linear-gradient(135deg, #6b0f0f 0%, #b91c1c 100%); border-radius: 18px; padding: 1.8rem 1.5rem; text-align: center; color: white; margin: 1.5rem 0; box-shadow: 0 8px 28px rgba(107,15,15,0.3); }
+    .cta-banner h3 { font-family: 'Playfair Display', serif; font-size: 28px; font-weight: 900; margin-bottom: 0.5rem; }
+    .cta-banner p { font-size: 14px; opacity: 0.92; margin-bottom: 1rem; }
+    .cta-btn { background: white; color: #991b1b; border: none; border-radius: 999px; padding: 12px 32px; font-size: 15px; font-weight: 700; cursor: pointer; }
     #map { height: 280px; width: 100%; border-radius: 12px; margin-bottom: 1rem; display: none; border: 1px solid #e5e7eb; }
     #map.show { display: block; }
     .map-label { font-size: 13px; color: #6b7280; margin-bottom: 6px; font-weight: 500; }
@@ -105,6 +171,19 @@
   </style>
 </head>
 <body>
+
+<div class="bg-symbols">
+  <span style="left:5%; animation-duration:18s; animation-delay:0s;">✚</span>
+  <span style="left:15%; animation-duration:22s; animation-delay:3s;">☮</span>
+  <span style="left:25%; animation-duration:16s; animation-delay:6s;">♡</span>
+  <span style="left:38%; animation-duration:25s; animation-delay:1s;">✚</span>
+  <span style="left:50%; animation-duration:20s; animation-delay:8s;">☮</span>
+  <span style="left:62%; animation-duration:17s; animation-delay:4s;">♡</span>
+  <span style="left:72%; animation-duration:23s; animation-delay:2s;">✚</span>
+  <span style="left:83%; animation-duration:19s; animation-delay:7s;">☮</span>
+  <span style="left:92%; animation-duration:21s; animation-delay:5s;">♡</span>
+</div>
+
 
 <div class="topbar">
   <div class="logo">🚑 RapidAid</div>
@@ -137,9 +216,48 @@
       <source src="ambulance.mp4.mp4" type="video/mp4">
     </video>
     <div class="hero-overlay"></div>
+
+    <div class="cine-bar top"></div>
+    <div class="cine-bar bottom"></div>
+    <div class="light-sweep"></div>
+
+    <div class="clouds-layer">
+      <div class="cloud" style="top:15%; width:120px; height:24px; animation-duration:38s; animation-delay:0s;"></div>
+      <div class="cloud" style="top:32%; width:90px; height:18px; animation-duration:46s; animation-delay:10s;"></div>
+      <div class="cloud" style="top:8%; width:150px; height:28px; animation-duration:55s; animation-delay:22s;"></div>
+      <div class="cloud" style="top:40%; width:100px; height:20px; animation-duration:42s; animation-delay:5s;"></div>
+    </div>
+
+    <div class="birds-layer">
+      <div class="bird" style="top:18%; animation-duration:14s; animation-delay:0s;">
+        <svg viewBox="0 0 24 24"><path class="wing" d="M2 12 Q8 4 12 12 Q16 4 22 12" fill="none" stroke="#000" stroke-width="2" stroke-linecap="round"/></svg>
+      </div>
+      <div class="bird" style="top:28%; animation-duration:18s; animation-delay:4s;">
+        <svg viewBox="0 0 24 24"><path class="wing" d="M2 12 Q8 4 12 12 Q16 4 22 12" fill="none" stroke="#000" stroke-width="2" stroke-linecap="round"/></svg>
+      </div>
+      <div class="bird" style="top:12%; animation-duration:16s; animation-delay:8s;">
+        <svg viewBox="0 0 24 24"><path class="wing" d="M2 12 Q8 4 12 12 Q16 4 22 12" fill="none" stroke="#000" stroke-width="2" stroke-linecap="round"/></svg>
+      </div>
+      <div class="bird" style="top:35%; animation-duration:20s; animation-delay:2s;">
+        <svg viewBox="0 0 24 24"><path class="wing" d="M2 12 Q8 4 12 12 Q16 4 22 12" fill="none" stroke="#000" stroke-width="2" stroke-linecap="round"/></svg>
+      </div>
+    </div>
+
+    <div class="people-layer">
+      <div class="person" style="left:0; animation-duration:16s; animation-delay:0s;">
+        <svg viewBox="0 0 16 38"><circle cx="8" cy="5" r="4" fill="#000"/><rect x="6.5" y="9" width="3" height="16" rx="1.5" fill="#000"/><rect class="leg-l" x="6.5" y="24" width="2.5" height="13" rx="1.2" fill="#000"/><rect class="leg-r" x="7" y="24" width="2.5" height="13" rx="1.2" fill="#000"/></svg>
+      </div>
+      <div class="person" style="left:0; animation-duration:22s; animation-delay:6s;">
+        <svg viewBox="0 0 16 38"><circle cx="8" cy="5" r="4" fill="#000"/><rect x="6.5" y="9" width="3" height="16" rx="1.5" fill="#000"/><rect class="leg-l" x="6.5" y="24" width="2.5" height="13" rx="1.2" fill="#000"/><rect class="leg-r" x="7" y="24" width="2.5" height="13" rx="1.2" fill="#000"/></svg>
+      </div>
+      <div class="person" style="left:0; animation-duration:19s; animation-delay:11s;">
+        <svg viewBox="0 0 16 38"><circle cx="8" cy="5" r="4" fill="#000"/><rect x="6.5" y="9" width="3" height="16" rx="1.5" fill="#000"/><rect class="leg-l" x="6.5" y="24" width="2.5" height="13" rx="1.2" fill="#000"/><rect class="leg-r" x="7" y="24" width="2.5" height="13" rx="1.2" fill="#000"/></svg>
+      </div>
+    </div>
     <div class="hero-content">
       <div class="hero-badge">⚡ India's Fastest Ambulance Network</div>
       <h1>Book an Ambulance<br>in Minutes</h1>
+      <div class="hero-divider"></div>
       <p>Certified ambulances dispatched instantly.<br>Available 24/7 across your city.</p>
       <div class="eta-row">
         <div class="eta-chip">🚑 Basic ~10 min</div>
@@ -219,6 +337,63 @@
           <div class="t-step"><div class="t-dot">✓</div><div class="t-lbl">Email sent</div></div>
           <div class="t-step"><div class="t-dot pending">🏠</div><div class="t-lbl">Arrived</div></div>
         </div>
+      </div>
+
+      <!-- HOW IT WORKS -->
+      <div class="how-section">
+        <div class="section-title">How RapidAid works</div>
+        <div class="how-grid">
+          <div class="how-step">
+            <div class="how-num">1</div>
+            <div class="how-text"><strong>Enter your location</strong><span>Tap "Auto-detect" or type your pickup address. We pin it on the map instantly.</span></div>
+          </div>
+          <div class="how-step">
+            <div class="how-num">2</div>
+            <div class="how-text"><strong>Choose ambulance type</strong><span>Pick Basic, ICU, Neonatal or Mortuary based on the emergency.</span></div>
+          </div>
+          <div class="how-step">
+            <div class="how-num">3</div>
+            <div class="how-text"><strong>Confirm your booking</strong><span>One tap sends your request. Our team is alerted by email and WhatsApp in seconds.</span></div>
+          </div>
+          <div class="how-step">
+            <div class="how-num">4</div>
+            <div class="how-text"><strong>Ambulance dispatched</strong><span>The nearest ambulance is on its way — Basic in ~10 min, ICU in ~15 min.</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- WHY RAPIDAID -->
+      <div class="how-section">
+        <div class="section-title">Why choose RapidAid</div>
+        <div class="why-grid">
+          <div class="why-card">
+            <div class="why-icon">⚡</div>
+            <div class="why-title">Lightning Fast</div>
+            <div class="why-desc">Ambulances reach you in minutes, not hours.</div>
+          </div>
+          <div class="why-card">
+            <div class="why-icon">🏥</div>
+            <div class="why-title">Certified Fleet</div>
+            <div class="why-desc">Trained drivers and medically-equipped vehicles.</div>
+          </div>
+          <div class="why-card">
+            <div class="why-icon">📍</div>
+            <div class="why-title">Live Tracking</div>
+            <div class="why-desc">See your pickup location pinned on the map.</div>
+          </div>
+          <div class="why-card">
+            <div class="why-icon">🕐</div>
+            <div class="why-title">24/7 Available</div>
+            <div class="why-desc">Round-the-clock service, every day of the year.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CTA BANNER -->
+      <div class="cta-banner">
+        <h3>Every second counts ⏱️</h3>
+        <p>In an emergency, don't wait. Book a certified ambulance now.</p>
+        <button class="cta-btn" onclick="document.getElementById('book-section').scrollIntoView({behavior:'smooth'})">🚑 Book an Ambulance</button>
       </div>
     </div>
 
