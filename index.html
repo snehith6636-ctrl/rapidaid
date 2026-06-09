@@ -11,13 +11,35 @@
     .topbar { background: #b91c1c; color: white; padding: 12px 20px; display: flex; align-items: center; justify-content: space-between; }
     .topbar .logo { font-size: 20px; font-weight: 700; }
     .topbar .helpline { font-size: 13px; background: rgba(255,255,255,0.15); padding: 5px 12px; border-radius: 999px; }
+    .topbar .user-btn { font-size: 13px; background: white; color: #b91c1c; padding: 5px 14px; border-radius: 999px; cursor: pointer; font-weight: 600; border: none; }
+
+    /* PAGES */
+    .page { display: none; }
+    .page.active { display: block; }
+
+    /* LOGIN PAGE */
+    .login-wrap { max-width: 400px; margin: 3rem auto; padding: 1.5rem; }
+    .login-card { background: white; border-radius: 16px; padding: 2rem; border: 1px solid #e5e7eb; text-align: center; }
+    .login-card h2 { font-size: 22px; font-weight: 700; margin-bottom: 0.5rem; }
+    .login-card p { font-size: 14px; color: #6b7280; margin-bottom: 1.5rem; }
+    .login-input { width: 100%; padding: 12px 14px; border: 1.5px solid #e5e7eb; border-radius: 8px; font-size: 15px; margin-bottom: 1rem; font-family: inherit; }
+    .login-input:focus { outline: none; border-color: #dc2626; }
+    .login-btn { width: 100%; background: #dc2626; color: white; border: none; border-radius: 10px; padding: 13px; font-size: 15px; font-weight: 700; cursor: pointer; margin-bottom: 0.5rem; }
+    .login-btn:hover { background: #b91c1c; }
+    .login-btn:disabled { background: #fca5a5; cursor: not-allowed; }
+    .login-msg { font-size: 13px; color: #6b7280; margin-top: 8px; }
+    .login-msg.error { color: #dc2626; }
+    .login-msg.success { color: #15803d; }
+    .skip-btn { background: none; border: none; color: #6b7280; font-size: 13px; cursor: pointer; text-decoration: underline; margin-top: 8px; }
+
+    /* HERO */
     .hero { background: linear-gradient(135deg, #b91c1c 0%, #ef4444 100%); color: white; padding: 2.5rem 1.5rem 3rem; text-align: center; }
     .hero h1 { font-size: 30px; font-weight: 800; margin-bottom: 0.5rem; }
     .hero p { font-size: 15px; opacity: 0.9; margin-bottom: 1.5rem; }
     .eta-row { display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; margin-bottom: 1.5rem; }
     .eta-chip { background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3); border-radius: 999px; padding: 7px 18px; font-size: 13px; }
     .book-btn { background: white; color: #b91c1c; border: none; border-radius: 999px; padding: 14px 36px; font-size: 16px; font-weight: 700; cursor: pointer; }
-    .book-btn:hover { transform: scale(1.04); }
+
     .container { max-width: 680px; margin: 0 auto; padding: 1.5rem; }
     .stats-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 1.5rem 0; }
     .stat-card { background: white; border: 1px solid #e5e7eb; border-radius: 12px; padding: 1rem; text-align: center; }
@@ -38,10 +60,10 @@
     .form-input:focus { outline: none; border-color: #dc2626; background: white; }
     .form-row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
     .location-btn { width: 100%; background: #f9fafb; border: 1.5px dashed #dc2626; border-radius: 8px; padding: 11px; font-size: 14px; color: #dc2626; font-weight: 600; cursor: pointer; margin-bottom: 1rem; }
-    .location-btn:hover { background: #fff5f5; }
     .submit-btn { width: 100%; background: #dc2626; color: white; border: none; border-radius: 10px; padding: 14px; font-size: 16px; font-weight: 700; cursor: pointer; margin-top: 0.5rem; }
-    .submit-btn:hover { background: #b91c1c; }
     .submit-btn:disabled { background: #fca5a5; cursor: not-allowed; }
+    .status-msg { font-size: 13px; color: #6b7280; text-align: center; padding: 8px; }
+    .status-msg.error { color: #dc2626; }
     .success-box { display: none; background: #f0fdf4; border: 1.5px solid #86efac; border-radius: 12px; padding: 1.5rem; text-align: center; margin-bottom: 1.5rem; }
     .success-box.show { display: block; }
     .success-box h3 { color: #15803d; font-size: 18px; margin-bottom: 0.5rem; }
@@ -52,11 +74,23 @@
     .t-dot { width: 28px; height: 28px; border-radius: 50%; background: #22c55e; display: flex; align-items: center; justify-content: center; color: white; font-size: 13px; }
     .t-dot.pending { background: #d1fae5; color: #22c55e; border: 1.5px solid #86efac; }
     .t-lbl { font-size: 11px; color: #166534; text-align: center; max-width: 60px; line-height: 1.3; }
-    .status-msg { font-size: 13px; color: #6b7280; text-align: center; padding: 8px; }
-    .status-msg.error { color: #dc2626; }
+
+    /* HISTORY PAGE */
+    .history-wrap { max-width: 680px; margin: 0 auto; padding: 1.5rem; }
+    .history-header { display: flex; align-items: center; gap: 12px; margin-bottom: 1.5rem; }
+    .back-btn { background: #f3f4f6; border: none; border-radius: 8px; padding: 8px 14px; font-size: 13px; cursor: pointer; }
+    .history-title { font-size: 20px; font-weight: 700; }
+    .history-item { background: white; border: 1px solid #e5e7eb; border-radius: 12px; padding: 1rem; margin-bottom: 10px; }
+    .history-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+    .history-type { background: #fef2f2; color: #dc2626; padding: 3px 10px; border-radius: 999px; font-size: 12px; font-weight: 600; }
+    .history-date { font-size: 12px; color: #6b7280; }
+    .history-details { font-size: 13px; color: #374151; line-height: 1.8; }
+    .status-badge { display: inline-block; background: #fef9c3; color: #854d0e; padding: 2px 8px; border-radius: 999px; font-size: 11px; font-weight: 600; margin-top: 4px; }
+    .no-history { text-align: center; padding: 3rem; color: #6b7280; }
+
+    /* ADMIN */
     .admin-section { background: white; border: 1px solid #e5e7eb; border-radius: 12px; padding: 1.5rem; margin-bottom: 1.5rem; }
     .admin-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
-    .admin-title { font-size: 16px; font-weight: 600; }
     .refresh-btn { background: #f3f4f6; border: none; border-radius: 8px; padding: 6px 14px; font-size: 13px; cursor: pointer; }
     .booking-item { background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; padding: 12px; margin-bottom: 8px; }
     .booking-item-top { display: flex; justify-content: space-between; align-items: center; }
@@ -64,120 +98,169 @@
     .booking-type { font-size: 12px; background: #fef2f2; color: #dc2626; padding: 2px 8px; border-radius: 999px; font-weight: 500; }
     .booking-details { font-size: 12px; color: #6b7280; margin-top: 4px; line-height: 1.6; }
     .no-bookings { text-align: center; color: #6b7280; font-size: 14px; padding: 1rem; }
+
     .footer { text-align: center; padding: 1.5rem; background: #1f2937; color: white; margin-top: 1rem; }
     .footer .brand { font-size: 18px; font-weight: 700; color: #f87171; margin-bottom: 6px; }
     .footer p { font-size: 13px; color: #9ca3af; line-height: 1.7; }
+
+    .nav-tabs { display: flex; gap: 8px; margin-bottom: 1rem; flex-wrap: wrap; }
+    .nav-tab { background: #f3f4f6; border: none; border-radius: 8px; padding: 8px 16px; font-size: 13px; cursor: pointer; font-weight: 500; }
+    .nav-tab.active { background: #dc2626; color: white; }
   </style>
 </head>
 <body>
 
 <div class="topbar">
   <div class="logo">🚑 RapidAid</div>
-  <div class="helpline">Emergency: 112</div>
+  <div style="display:flex;gap:8px;align-items:center;">
+    <div class="helpline">112</div>
+    <button class="user-btn" id="user-btn" onclick="handleUserBtn()">Login</button>
+  </div>
 </div>
 
-<div class="hero">
-  <div style="display:inline-block;background:rgba(255,255,255,0.15);border-radius:999px;padding:4px 14px;font-size:12px;margin-bottom:1rem;">⚡ India's Fastest Ambulance Network</div>
-  <h1>Book Ambulance in Minutes</h1>
-  <p>Certified ambulances dispatched instantly.<br>Available 24/7 across your city.</p>
-  <div class="eta-row">
-    <div class="eta-chip">🚑 Basic Ambulance ~10 min</div>
-    <div class="eta-chip">🏥 ICU Ambulance ~15 min</div>
-  </div>
-  <button class="book-btn" onclick="document.getElementById('book-section').scrollIntoView({behavior:'smooth'})">
-    🚑 Book Now — It's Free
-  </button>
-</div>
+<!-- LOGIN PAGE -->
+<div class="page active" id="page-login">
+  <div class="login-wrap">
+    <div class="login-card">
+      <div style="font-size:48px;margin-bottom:0.5rem;">🚑</div>
+      <h2>Welcome to RapidAid</h2>
+      <p>Login with your phone number to book ambulances and track your history</p>
 
-<div class="container">
-  <div class="stats-row">
-    <div class="stat-card"><div class="stat-num">2,400+</div><div class="stat-label">Bookings done</div></div>
-    <div class="stat-card"><div class="stat-num">10 min</div><div class="stat-label">Avg. arrival time</div></div>
-    <div class="stat-card"><div class="stat-num">24/7</div><div class="stat-label">Always available</div></div>
-  </div>
-
-  <div class="section-title">Choose ambulance type</div>
-  <div class="types-grid">
-    <div class="type-card selected" onclick="selectType(this,'Basic','10')">
-      <div class="icon">🚑</div><div class="name">Basic</div><div class="price">From ₹500</div>
-    </div>
-    <div class="type-card" onclick="selectType(this,'ICU','15')">
-      <div class="icon">🏥</div><div class="name">ICU</div><div class="price">From ₹1,200</div>
-    </div>
-    <div class="type-card" onclick="selectType(this,'Neonatal','15')">
-      <div class="icon">👶</div><div class="name">Neonatal</div><div class="price">From ₹1,500</div>
-    </div>
-    <div class="type-card" onclick="selectType(this,'Mortuary','20')">
-      <div class="icon">🕊️</div><div class="name">Mortuary</div><div class="price">From ₹800</div>
-    </div>
-  </div>
-
-  <div class="section-title" id="book-section">Book your ambulance</div>
-  <div class="booking-form">
-    <div class="form-row">
-      <label class="form-label">Patient name</label>
-      <input class="form-input" id="pname" type="text" placeholder="Full name" />
-    </div>
-    <div class="form-row">
-      <label class="form-label">Phone number</label>
-      <input class="form-input" id="pphone" type="tel" placeholder="+91 98765 43210" />
-    </div>
-    <button class="location-btn" onclick="getLocation()">📍 Auto-detect My Location (GPS)</button>
-    <div class="form-row">
-      <label class="form-label">Pickup address</label>
-      <input class="form-input" id="ploc" type="text" placeholder="House no, street, landmark" />
-    </div>
-    <div class="form-row-2">
-      <div>
-        <label class="form-label">City</label>
-        <input class="form-input" id="pcity" type="text" placeholder="Hyderabad" />
+      <div id="login-step1">
+        <input class="login-input" id="phone-input" type="tel" placeholder="+91 98765 43210" />
+        <div id="recaptcha-container"></div>
+        <button class="login-btn" id="send-otp-btn" onclick="sendOTP()">📱 Send OTP</button>
+        <div id="login-msg" class="login-msg"></div>
+        <br>
+        <button class="skip-btn" onclick="showPage('page-home')">Skip login → Continue as guest</button>
       </div>
-      <div>
-        <label class="form-label">Emergency type</label>
-        <select class="form-input" id="ptype">
-          <option>Accident</option>
-          <option>Heart attack</option>
-          <option>Breathing issue</option>
-          <option>Pregnancy</option>
-          <option>Stroke</option>
-          <option>Other</option>
-        </select>
+
+      <div id="login-step2" style="display:none;">
+        <p style="color:#15803d;font-weight:600;margin-bottom:1rem;">✅ OTP sent! Check your SMS</p>
+        <input class="login-input" id="otp-input" type="number" placeholder="Enter 6-digit OTP" />
+        <button class="login-btn" id="verify-otp-btn" onclick="verifyOTP()">✅ Verify OTP & Login</button>
+        <div id="otp-msg" class="login-msg"></div>
       </div>
     </div>
-    <div id="status-msg" class="status-msg"></div>
-    <button class="submit-btn" id="submit-btn" onclick="bookAmbulance()">🚑 Confirm Booking</button>
-  </div>
-
-  <div class="success-box" id="success-box">
-    <h3>✅ Ambulance Booked Successfully!</h3>
-    <p id="success-msg"></p>
-    <div class="tracker">
-      <div class="t-step"><div class="t-dot">✓</div><div class="t-lbl">Booking confirmed</div></div>
-      <div class="t-step"><div class="t-dot">✓</div><div class="t-lbl">Saved to database</div></div>
-      <div class="t-step"><div class="t-dot">✓</div><div class="t-lbl">Email sent</div></div>
-      <div class="t-step"><div class="t-dot pending">🏠</div><div class="t-lbl">Arrived</div></div>
-    </div>
-  </div>
-
-  <div class="section-title">📋 Admin — All Bookings</div>
-  <div class="admin-section">
-    <div class="admin-header">
-      <div class="admin-title">Live Bookings Dashboard</div>
-      <button class="refresh-btn" onclick="loadBookings()">🔄 Refresh</button>
-    </div>
-    <div id="bookings-list"><div class="no-bookings">Loading bookings...</div></div>
   </div>
 </div>
 
-<div class="footer">
-  <div class="brand">🚑 RapidAid</div>
-  <p>© 2026 RapidAid. All rights reserved. Built in India 🇮🇳<br>
-  Emergency Helpline: 112 &nbsp;|&nbsp; Contact: snehith6636@gmail.com</p>
+<!-- HOME PAGE -->
+<div class="page" id="page-home">
+  <div class="hero">
+    <div style="display:inline-block;background:rgba(255,255,255,0.15);border-radius:999px;padding:4px 14px;font-size:12px;margin-bottom:1rem;">⚡ India's Fastest Ambulance Network</div>
+    <h1>Book Ambulance in Minutes</h1>
+    <p>Certified ambulances dispatched instantly.<br>Available 24/7 across your city.</p>
+    <div class="eta-row">
+      <div class="eta-chip">🚑 Basic ~10 min</div>
+      <div class="eta-chip">🏥 ICU ~15 min</div>
+    </div>
+    <button class="book-btn" onclick="document.getElementById('book-section').scrollIntoView({behavior:'smooth'})">
+      🚑 Book Now — It's Free
+    </button>
+  </div>
+
+  <div class="container">
+    <div class="nav-tabs">
+      <button class="nav-tab active" onclick="switchTab('book')">🚑 Book Ambulance</button>
+      <button class="nav-tab" onclick="switchTab('history')">📋 My Bookings</button>
+      <button class="nav-tab" onclick="switchTab('admin')">⚙️ Admin</button>
+    </div>
+
+    <!-- BOOKING TAB -->
+    <div id="tab-book">
+      <div class="stats-row">
+        <div class="stat-card"><div class="stat-num">2,400+</div><div class="stat-label">Bookings done</div></div>
+        <div class="stat-card"><div class="stat-num">10 min</div><div class="stat-label">Avg. arrival</div></div>
+        <div class="stat-card"><div class="stat-num">24/7</div><div class="stat-label">Available</div></div>
+      </div>
+
+      <div class="section-title">Choose ambulance type</div>
+      <div class="types-grid">
+        <div class="type-card selected" onclick="selectType(this,'Basic','10')"><div class="icon">🚑</div><div class="name">Basic</div><div class="price">From ₹500</div></div>
+        <div class="type-card" onclick="selectType(this,'ICU','15')"><div class="icon">🏥</div><div class="name">ICU</div><div class="price">From ₹1,200</div></div>
+        <div class="type-card" onclick="selectType(this,'Neonatal','15')"><div class="icon">👶</div><div class="name">Neonatal</div><div class="price">From ₹1,500</div></div>
+        <div class="type-card" onclick="selectType(this,'Mortuary','20')"><div class="icon">🕊️</div><div class="name">Mortuary</div><div class="price">From ₹800</div></div>
+      </div>
+
+      <div class="section-title" id="book-section">Book your ambulance</div>
+      <div class="booking-form">
+        <div class="form-row">
+          <label class="form-label">Patient name</label>
+          <input class="form-input" id="pname" type="text" placeholder="Full name" />
+        </div>
+        <div class="form-row">
+          <label class="form-label">Phone number</label>
+          <input class="form-input" id="pphone" type="tel" placeholder="+91 98765 43210" />
+        </div>
+        <button class="location-btn" onclick="getLocation()">📍 Auto-detect My Location (GPS)</button>
+        <div class="form-row">
+          <label class="form-label">Pickup address</label>
+          <input class="form-input" id="ploc" type="text" placeholder="House no, street, landmark" />
+        </div>
+        <div class="form-row-2">
+          <div>
+            <label class="form-label">City</label>
+            <input class="form-input" id="pcity" type="text" placeholder="Hyderabad" />
+          </div>
+          <div>
+            <label class="form-label">Emergency type</label>
+            <select class="form-input" id="ptype">
+              <option>Accident</option>
+              <option>Heart attack</option>
+              <option>Breathing issue</option>
+              <option>Pregnancy</option>
+              <option>Stroke</option>
+              <option>Other</option>
+            </select>
+          </div>
+        </div>
+        <div id="status-msg" class="status-msg"></div>
+        <button class="submit-btn" id="submit-btn" onclick="bookAmbulance()">🚑 Confirm Booking</button>
+      </div>
+
+      <div class="success-box" id="success-box">
+        <h3>✅ Ambulance Booked Successfully!</h3>
+        <p id="success-msg"></p>
+        <div class="tracker">
+          <div class="t-step"><div class="t-dot">✓</div><div class="t-lbl">Confirmed</div></div>
+          <div class="t-step"><div class="t-dot">✓</div><div class="t-lbl">Saved</div></div>
+          <div class="t-step"><div class="t-dot">✓</div><div class="t-lbl">Email sent</div></div>
+          <div class="t-step"><div class="t-dot pending">🏠</div><div class="t-lbl">Arrived</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- HISTORY TAB -->
+    <div id="tab-history" style="display:none;">
+      <div class="section-title">📋 My Booking History</div>
+      <div id="history-list"><div class="no-history">Loading your bookings...</div></div>
+    </div>
+
+    <!-- ADMIN TAB -->
+    <div id="tab-admin" style="display:none;">
+      <div class="admin-section">
+        <div class="admin-header">
+          <div style="font-size:16px;font-weight:600;">Live Bookings Dashboard</div>
+          <button class="refresh-btn" onclick="loadBookings()">🔄 Refresh</button>
+        </div>
+        <div id="bookings-list"><div class="no-bookings">Loading...</div></div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="footer">
+    <div class="brand">🚑 RapidAid</div>
+    <p>© 2026 RapidAid. All rights reserved. Built in India 🇮🇳<br>
+    Emergency: 112 &nbsp;|&nbsp; rapidaidlive@gmail.com</p>
+  </div>
 </div>
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-app.js";
-  import { getFirestore, collection, addDoc, getDocs, query } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js";
+  import { getFirestore, collection, addDoc, getDocs, query, where } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js";
+  import { getAuth, RecaptchaVerifier, signInWithPhoneNumber } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-auth.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyAIn53Fc1_4STM0E1El-4SRPXRnTlvYeqg",
@@ -191,24 +274,116 @@
 
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
+  const auth = getAuth(app);
 
   window.db = db;
+  window.auth = auth;
   window.collection = collection;
   window.addDoc = addDoc;
   window.getDocs = getDocs;
   window.query = query;
+  window.where = where;
+  window.RecaptchaVerifier = RecaptchaVerifier;
+  window.signInWithPhoneNumber = signInWithPhoneNumber;
 
   window.loadBookings();
 </script>
 
 <script>
-  // EmailJS init
   emailjs.init("Vq9bpqwxbUTFZDC-F");
 
   let selectedType = 'Basic';
   let selectedEta = '10';
   let userLat = null;
   let userLng = null;
+  let currentUser = null;
+  let confirmationResult = null;
+
+  function showPage(pageId) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.getElementById(pageId).classList.add('active');
+  }
+
+  function switchTab(tab) {
+    document.getElementById('tab-book').style.display = tab === 'book' ? 'block' : 'none';
+    document.getElementById('tab-history').style.display = tab === 'history' ? 'block' : 'none';
+    document.getElementById('tab-admin').style.display = tab === 'admin' ? 'block' : 'none';
+    document.querySelectorAll('.nav-tab').forEach((t, i) => {
+      t.classList.toggle('active', ['book','history','admin'][i] === tab);
+    });
+    if (tab === 'history') loadHistory();
+    if (tab === 'admin') loadBookings();
+  }
+
+  function handleUserBtn() {
+    if (currentUser) {
+      if (confirm('Logout?')) {
+        window.auth.signOut();
+        currentUser = null;
+        document.getElementById('user-btn').textContent = 'Login';
+        showPage('page-login');
+      }
+    } else {
+      showPage('page-login');
+    }
+  }
+
+  async function sendOTP() {
+    const phone = document.getElementById('phone-input').value.trim();
+    const msg = document.getElementById('login-msg');
+    const btn = document.getElementById('send-otp-btn');
+
+    if (!phone || phone.length < 10) {
+      msg.textContent = '⚠️ Enter a valid phone number with country code e.g. +91 98765 43210';
+      msg.className = 'login-msg error';
+      return;
+    }
+
+    btn.disabled = true;
+    btn.textContent = '⏳ Sending OTP...';
+    msg.textContent = '';
+
+    try {
+      window.recaptchaVerifier = new window.RecaptchaVerifier(window.auth, 'recaptcha-container', { size: 'invisible' });
+      confirmationResult = await window.signInWithPhoneNumber(window.auth, phone, window.recaptchaVerifier);
+      document.getElementById('login-step1').style.display = 'none';
+      document.getElementById('login-step2').style.display = 'block';
+    } catch (err) {
+      msg.textContent = '❌ Error: ' + err.message;
+      msg.className = 'login-msg error';
+      btn.disabled = false;
+      btn.textContent = '📱 Send OTP';
+    }
+  }
+
+  async function verifyOTP() {
+    const otp = document.getElementById('otp-input').value.trim();
+    const msg = document.getElementById('otp-msg');
+    const btn = document.getElementById('verify-otp-btn');
+
+    if (!otp || otp.length !== 6) {
+      msg.textContent = '⚠️ Enter the 6-digit OTP';
+      msg.className = 'login-msg error';
+      return;
+    }
+
+    btn.disabled = true;
+    btn.textContent = '⏳ Verifying...';
+
+    try {
+      const result = await confirmationResult.confirm(otp);
+      currentUser = result.user;
+      document.getElementById('user-btn').textContent = '👤 ' + currentUser.phoneNumber;
+      // Pre-fill phone in booking form
+      document.getElementById('pphone').value = currentUser.phoneNumber;
+      showPage('page-home');
+    } catch (err) {
+      msg.textContent = '❌ Wrong OTP. Try again.';
+      msg.className = 'login-msg error';
+      btn.disabled = false;
+      btn.textContent = '✅ Verify OTP & Login';
+    }
+  }
 
   function selectType(el, name, eta) {
     document.querySelectorAll('.type-card').forEach(c => c.classList.remove('selected'));
@@ -219,30 +394,25 @@
 
   function getLocation() {
     const btn = document.querySelector('.location-btn');
-    btn.textContent = '📍 Detecting location...';
+    btn.textContent = '📍 Detecting...';
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
-        (position) => {
-          userLat = position.coords.latitude;
-          userLng = position.coords.longitude;
+        (pos) => {
+          userLat = pos.coords.latitude;
+          userLng = pos.coords.longitude;
           btn.textContent = '✅ Location detected!';
           btn.style.background = '#f0fdf4';
           btn.style.borderColor = '#22c55e';
           btn.style.color = '#15803d';
           fetch('https://nominatim.openstreetmap.org/reverse?lat=' + userLat + '&lon=' + userLng + '&format=json')
-            .then(r => r.json())
-            .then(data => {
-              if (data && data.display_name) {
+            .then(r => r.json()).then(data => {
+              if (data) {
                 document.getElementById('ploc').value = data.display_name.split(',').slice(0,3).join(', ');
-                const city = data.address.city || data.address.town || data.address.village || '';
-                document.getElementById('pcity').value = city;
+                document.getElementById('pcity').value = data.address.city || data.address.town || 'Hyderabad';
               }
             }).catch(() => {});
         },
-        () => {
-          btn.textContent = '❌ Location denied. Type address manually.';
-          btn.style.color = '#dc2626';
-        }
+        () => { btn.textContent = '❌ Denied. Type manually.'; btn.style.color = '#dc2626'; }
       );
     }
   }
@@ -257,20 +427,16 @@
     const btn = document.getElementById('submit-btn');
 
     if (!name || !phone || !loc) {
-      statusEl.textContent = '⚠️ Please fill in name, phone, and pickup location.';
+      statusEl.textContent = '⚠️ Please fill name, phone, and location.';
       statusEl.className = 'status-msg error';
       return;
     }
 
     btn.disabled = true;
     btn.textContent = '⏳ Booking...';
-    statusEl.textContent = 'Saving booking and sending email...';
-    statusEl.className = 'status-msg';
-
     const bookedAt = new Date().toLocaleString('en-IN');
 
     try {
-      // 1. Save to Firebase
       const bookingData = {
         name, phone, location: loc, city, emergency,
         ambulanceType: selectedType,
@@ -278,81 +444,108 @@
         latitude: userLat || null,
         longitude: userLng || null,
         status: 'pending',
+        userId: currentUser ? currentUser.uid : 'guest',
+        userPhone: currentUser ? currentUser.phoneNumber : phone,
         timestamp: new Date().toISOString(),
         bookedAt
       };
+
       await window.addDoc(window.collection(window.db, 'bookings'), bookingData);
 
-      // 2. Send Email via EmailJS
       await emailjs.send("service_1izn4a9", "template_q5ufvj5", {
-        patient_name: name,
-        phone: phone,
-        location: loc,
-        city: city,
-        emergency: emergency,
-        ambulance_type: selectedType,
-        eta: selectedEta + ' minutes',
-        booked_at: bookedAt
+        patient_name: name, phone, location: loc, city, emergency,
+        ambulance_type: selectedType, eta: selectedEta + ' minutes', booked_at: bookedAt
       });
 
       document.getElementById('success-msg').innerHTML =
         '<strong>' + selectedType + ' ambulance</strong> booked for <strong>' + name + '</strong><br>' +
-        'ETA: ~' + selectedEta + ' minutes &nbsp;|&nbsp; We will call <strong>' + phone + '</strong> shortly.<br>' +
-        '✅ Booking saved! 📧 Email sent to owner!';
+        'ETA: ~' + selectedEta + ' min | We will call <strong>' + phone + '</strong><br>' +
+        '✅ Saved to database! 📧 Email sent!';
 
       document.getElementById('success-box').classList.add('show');
       document.getElementById('success-box').scrollIntoView({ behavior: 'smooth' });
       statusEl.textContent = '';
-      btn.textContent = '✅ Booking Confirmed!';
+      btn.textContent = '✅ Booked!';
       loadBookings();
-
-    } catch (error) {
-      statusEl.textContent = '❌ Error: ' + error.message;
+    } catch (err) {
+      statusEl.textContent = '❌ Error: ' + err.message;
       statusEl.className = 'status-msg error';
       btn.disabled = false;
       btn.textContent = '🚑 Confirm Booking';
     }
   }
 
-  async function loadBookings() {
-    const listEl = document.getElementById('bookings-list');
-    if (!window.db) {
-      listEl.innerHTML = '<div class="no-bookings">Connecting...</div>';
-      setTimeout(loadBookings, 1000);
+  async function loadHistory() {
+    const el = document.getElementById('history-list');
+    if (!window.db) { el.innerHTML = '<div class="no-history">Connecting...</div>'; return; }
+    const phone = currentUser ? currentUser.phoneNumber : (document.getElementById('pphone').value.trim() || null);
+    if (!phone) {
+      el.innerHTML = '<div class="no-history">🔐 Please login to see your booking history.<br><button onclick="showPage(\'page-login\')" style="margin-top:12px;background:#dc2626;color:white;border:none;padding:8px 20px;border-radius:8px;cursor:pointer;">Login Now</button></div>';
       return;
     }
     try {
-      listEl.innerHTML = '<div class="no-bookings">Loading...</div>';
-      const snapshot = await window.getDocs(window.query(window.collection(window.db, 'bookings')));
-      if (snapshot.empty) {
-        listEl.innerHTML = '<div class="no-bookings">No bookings yet! 🚑</div>';
-        return;
-      }
+      el.innerHTML = '<div class="no-history">Loading...</div>';
+      const q = window.query(window.collection(window.db, 'bookings'), window.where('userPhone', '==', phone));
+      const snap = await window.getDocs(q);
+      if (snap.empty) { el.innerHTML = '<div class="no-history">No bookings yet! Book your first ambulance above 🚑</div>'; return; }
       const docs = [];
-      snapshot.forEach(doc => docs.push(doc.data()));
+      snap.forEach(d => docs.push(d.data()));
       docs.reverse();
-      listEl.innerHTML = docs.map(b => `
+      el.innerHTML = docs.map(b => `
+        <div class="history-item">
+          <div class="history-top">
+            <div class="history-type">🚑 ${b.ambulanceType}</div>
+            <div class="history-date">${b.bookedAt || b.timestamp}</div>
+          </div>
+          <div class="history-details">
+            👤 ${b.name} &nbsp;|&nbsp; 📞 ${b.phone}<br>
+            📍 ${b.location}, ${b.city}<br>
+            🆘 ${b.emergency} &nbsp;|&nbsp; ⏱️ ETA: ${b.eta}
+          </div>
+          <div><span class="status-badge">⏳ ${b.status || 'pending'}</span></div>
+        </div>`).join('');
+    } catch (err) {
+      el.innerHTML = '<div class="no-history" style="color:#dc2626">Error: ' + err.message + '</div>';
+    }
+  }
+
+  async function loadBookings() {
+    const el = document.getElementById('bookings-list');
+    if (!window.db) { el.innerHTML = '<div class="no-bookings">Connecting...</div>'; setTimeout(loadBookings, 1000); return; }
+    try {
+      el.innerHTML = '<div class="no-bookings">Loading...</div>';
+      const snap = await window.getDocs(window.query(window.collection(window.db, 'bookings')));
+      if (snap.empty) { el.innerHTML = '<div class="no-bookings">No bookings yet! 🚑</div>'; return; }
+      const docs = [];
+      snap.forEach(d => docs.push(d.data()));
+      docs.reverse();
+      el.innerHTML = docs.map(b => `
         <div class="booking-item">
           <div class="booking-item-top">
             <div class="booking-name">👤 ${b.name}</div>
             <div class="booking-type">${b.ambulanceType}</div>
           </div>
           <div class="booking-details">
-            📞 ${b.phone} &nbsp;|&nbsp; 🆘 ${b.emergency}<br>
+            📞 ${b.phone} | 🆘 ${b.emergency}<br>
             📍 ${b.location}, ${b.city}<br>
-            ⏱️ ETA: ${b.eta} &nbsp;|&nbsp; 🕐 ${b.bookedAt || b.timestamp}
+            ⏱️ ${b.eta} | 🕐 ${b.bookedAt || b.timestamp}
           </div>
         </div>`).join('');
     } catch (err) {
-      listEl.innerHTML = '<div class="no-bookings" style="color:#dc2626">Error: ' + err.message + '</div>';
+      el.innerHTML = '<div class="no-bookings" style="color:#dc2626">Error: ' + err.message + '</div>';
     }
   }
 
   window.loadBookings = loadBookings;
+  window.loadHistory = loadHistory;
+  window.showPage = showPage;
+  window.switchTab = switchTab;
+  window.handleUserBtn = handleUserBtn;
+  window.sendOTP = sendOTP;
+  window.verifyOTP = verifyOTP;
   window.selectType = selectType;
   window.getLocation = getLocation;
   window.bookAmbulance = bookAmbulance;
 </script>
-
 </body>
 </html>
