@@ -151,6 +151,23 @@
     .nav-tabs { display: flex; gap: 8px; margin-bottom: 1rem; flex-wrap: wrap; }
     .nav-tab { background: #f3f4f6; border: none; border-radius: 8px; padding: 8px 16px; font-size: 13px; cursor: pointer; font-weight: 500; }
     .nav-tab.active { background: #991b1b; color: white; }
+    /* driver job cards */
+    .driver-job { background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 12px; padding: 14px; margin-bottom: 10px; }
+    .dj-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+    .dj-name { font-size: 14px; font-weight: 600; }
+    .dj-status { font-size: 11px; padding: 3px 10px; border-radius: 999px; font-weight: 600; }
+    .dj-status.pending { background: #fef9c3; color: #854d0e; }
+    .dj-status.accepted { background: #dbeafe; color: #1e40af; }
+    .dj-status.ontheway { background: #fed7aa; color: #9a3412; }
+    .dj-status.arrived { background: #dcfce7; color: #15803d; }
+    .dj-details { font-size: 12px; color: #6b7280; line-height: 1.7; margin-bottom: 10px; }
+    .dj-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+    .dj-btn { border: none; border-radius: 8px; padding: 8px 16px; font-size: 13px; font-weight: 600; cursor: pointer; color: white; }
+    .dj-btn.accept { background: #2563eb; }
+    .dj-btn.way { background: #ea580c; }
+    .dj-btn.arrived { background: #16a34a; }
+    .dj-btn.map { background: #6b7280; text-decoration: none; display: inline-block; }
+    .dj-btn:disabled { background: #d1d5db; cursor: default; }
     /* How it works */
     .how-section { margin: 2rem 0 1rem; }
     .how-grid { display: flex; flex-direction: column; gap: 12px; }
@@ -288,6 +305,7 @@
     <div class="nav-tabs">
       <button class="nav-tab active" onclick="switchTab('book')">🚑 Book Ambulance</button>
       <button class="nav-tab" onclick="switchTab('history')">📋 My Bookings</button>
+      <button class="nav-tab" onclick="switchTab('driver')">🚗 Driver</button>
       <button class="nav-tab" onclick="switchTab('admin')">⚙️ Admin</button>
     </div>
 
@@ -417,6 +435,17 @@
       <div id="history-list"><div class="no-history">Loading your bookings...</div></div>
     </div>
 
+    <div id="tab-driver" style="display:none;">
+      <div class="admin-section">
+        <div class="admin-header">
+          <div style="font-size:16px;font-weight:600;">🚗 Driver Dashboard</div>
+          <button class="refresh-btn" onclick="loadDriverJobs()">🔄 Refresh</button>
+        </div>
+        <p style="font-size:13px;color:#6b7280;margin-bottom:1rem;">Accept bookings and update their status. Patients see updates live.</p>
+        <div id="driver-list"><div class="no-bookings">Loading jobs...</div></div>
+      </div>
+    </div>
+
     <div id="tab-admin" style="display:none;">
       <div class="admin-section">
         <div class="admin-header">
@@ -437,7 +466,7 @@
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-app.js";
-  import { getFirestore, collection, addDoc, getDocs, query, where } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js";
+  import { getFirestore, collection, addDoc, getDocs, query, where, doc, updateDoc } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyAIn53Fc1_4STM0E1El-4SRPXRnTlvYeqg",
@@ -457,6 +486,8 @@
   window.getDocs = getDocs;
   window.query = query;
   window.where = where;
+  window.doc = doc;
+  window.updateDoc = updateDoc;
   window.loadBookings();
   setTimeout(() => { if(window.updateStatCount) window.updateStatCount(); }, 1500);
 </script>
@@ -477,26 +508,34 @@
   }
 
   let adminUnlocked = false;
+  let driverUnlocked = false;
   const ADMIN_PASSWORD = "admin123";
+  const DRIVER_PASSWORD = "driver123";
 
   function switchTab(tab) {
     // Admin tab requires password
     if (tab === 'admin' && !adminUnlocked) {
       const entered = prompt('🔒 Enter admin password to view bookings:');
-      if (entered === null) return; // user cancelled
-      if (entered !== ADMIN_PASSWORD) {
-        alert('❌ Wrong password. Access denied.');
-        return;
-      }
+      if (entered === null) return;
+      if (entered !== ADMIN_PASSWORD) { alert('❌ Wrong password. Access denied.'); return; }
       adminUnlocked = true;
+    }
+    // Driver tab requires password
+    if (tab === 'driver' && !driverUnlocked) {
+      const entered = prompt('🔒 Enter driver password:');
+      if (entered === null) return;
+      if (entered !== DRIVER_PASSWORD) { alert('❌ Wrong password. Access denied.'); return; }
+      driverUnlocked = true;
     }
     document.getElementById('tab-book').style.display = tab === 'book' ? 'block' : 'none';
     document.getElementById('tab-history').style.display = tab === 'history' ? 'block' : 'none';
+    document.getElementById('tab-driver').style.display = tab === 'driver' ? 'block' : 'none';
     document.getElementById('tab-admin').style.display = tab === 'admin' ? 'block' : 'none';
     document.querySelectorAll('.nav-tab').forEach((t, i) => {
-      t.classList.toggle('active', ['book','history','admin'][i] === tab);
+      t.classList.toggle('active', ['book','history','driver','admin'][i] === tab);
     });
     if (tab === 'history') loadHistory();
+    if (tab === 'driver') loadDriverJobs();
     if (tab === 'admin') loadBookings();
   }
 
@@ -682,7 +721,7 @@
             📍 ${b.location}, ${b.city}<br>
             🆘 ${b.emergency} &nbsp;|&nbsp; ⏱️ ETA: ${b.eta}
           </div>
-          <div><span class="status-badge">⏳ ${b.status || 'pending'}</span></div>
+          <div><span class="status-badge">${(b.status==='accepted')?'✅ Driver assigned':(b.status==='ontheway')?'🚑 On the way':(b.status==='arrived')?'🏁 Arrived':'⏳ Pending'}</span></div>
         </div>`).join('');
     } catch (err) {
       el.innerHTML = '<div class="no-history" style="color:#dc2626">Error: ' + err.message + '</div>';
@@ -744,6 +783,60 @@
     }
   }
 
+  async function loadDriverJobs() {
+    const el = document.getElementById('driver-list');
+    if (!window.db) { el.innerHTML = '<div class="no-bookings">Connecting...</div>'; setTimeout(loadDriverJobs, 1000); return; }
+    try {
+      el.innerHTML = '<div class="no-bookings">Loading jobs...</div>';
+      const snap = await window.getDocs(window.query(window.collection(window.db, 'bookings')));
+      if (snap.empty) { el.innerHTML = '<div class="no-bookings">No jobs yet! 🚑</div>'; return; }
+      const jobs = [];
+      snap.forEach(d => jobs.push({ id: d.id, ...d.data() }));
+      jobs.reverse();
+      el.innerHTML = jobs.map(b => {
+        const status = b.status || 'pending';
+        const statusClass = status.replace(/\s/g, '').toLowerCase();
+        const statusLabel = status === 'pending' ? '⏳ Pending'
+          : status === 'accepted' ? '✅ Accepted'
+          : status === 'ontheway' ? '🚑 On the way'
+          : status === 'arrived' ? '🏁 Arrived' : status;
+        const mapLink = b.latitude ? `<a href="https://www.google.com/maps?q=${b.latitude},${b.longitude}" target="_blank" class="dj-btn map">📍 Navigate</a>` : '';
+        let actionBtns = '';
+        if (status === 'pending') actionBtns = `<button class="dj-btn accept" onclick="updateJobStatus('${b.id}','accepted')">Accept Job</button>`;
+        else if (status === 'accepted') actionBtns = `<button class="dj-btn way" onclick="updateJobStatus('${b.id}','ontheway')">Start — On the way</button>`;
+        else if (status === 'ontheway') actionBtns = `<button class="dj-btn arrived" onclick="updateJobStatus('${b.id}','arrived')">Mark as Arrived</button>`;
+        else actionBtns = `<button class="dj-btn" disabled>✅ Completed</button>`;
+        return `
+        <div class="driver-job">
+          <div class="dj-top">
+            <div class="dj-name">👤 ${b.name} · ${b.ambulanceType}</div>
+            <div class="dj-status ${statusClass}">${statusLabel}</div>
+          </div>
+          <div class="dj-details">
+            📞 ${b.phone} &nbsp;|&nbsp; 🆘 ${b.emergency}<br>
+            📍 ${b.location}, ${b.city}<br>
+            ⏱️ ETA: ${b.eta} &nbsp;|&nbsp; 🕐 ${b.bookedAt || b.timestamp}
+          </div>
+          <div class="dj-actions">${actionBtns}${mapLink}</div>
+        </div>`;
+      }).join('');
+    } catch (err) {
+      el.innerHTML = '<div class="no-bookings" style="color:#dc2626">Error: ' + err.message + '</div>';
+    }
+  }
+
+  async function updateJobStatus(jobId, newStatus) {
+    try {
+      const ref = window.doc(window.db, 'bookings', jobId);
+      await window.updateDoc(ref, { status: newStatus });
+      loadDriverJobs();
+    } catch (err) {
+      alert('❌ Could not update: ' + err.message);
+    }
+  }
+
+  window.loadDriverJobs = loadDriverJobs;
+  window.updateJobStatus = updateJobStatus;
   window.loadBookings = loadBookings;
   window.loadHistory = loadHistory;
   window.showPage = showPage;
