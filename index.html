@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>RapidAid — Book Ambulance Fast</title>
   <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: 'Segoe UI', sans-serif; background: #f9fafb; color: #111; }
@@ -87,6 +89,9 @@
     .nav-tabs { display: flex; gap: 8px; margin-bottom: 1rem; flex-wrap: wrap; }
     .nav-tab { background: #f3f4f6; border: none; border-radius: 8px; padding: 8px 16px; font-size: 13px; cursor: pointer; font-weight: 500; }
     .nav-tab.active { background: #dc2626; color: white; }
+    #map { height: 280px; width: 100%; border-radius: 12px; margin-bottom: 1rem; display: none; border: 1px solid #e5e7eb; }
+    #map.show { display: block; }
+    .map-label { font-size: 13px; color: #6b7280; margin-bottom: 6px; font-weight: 500; }
   </style>
 </head>
 <body>
@@ -163,6 +168,7 @@
           <input class="form-input" id="pphone" type="tel" placeholder="+91 98765 43210" />
         </div>
         <button class="location-btn" onclick="getLocation()">📍 Auto-detect My Location (GPS)</button>
+        <div id="map"></div>
         <div class="form-row">
           <label class="form-label">Pickup address</label>
           <input class="form-input" id="ploc" type="text" placeholder="House no, street, landmark" />
@@ -310,6 +316,28 @@
     selectedEta = eta;
   }
 
+  let map = null;
+  let mapMarker = null;
+
+  function showMap(lat, lng) {
+    const mapEl = document.getElementById('map');
+    mapEl.classList.add('show');
+    if (!map) {
+      map = L.map('map').setView([lat, lng], 16);
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap',
+        maxZoom: 19
+      }).addTo(map);
+    } else {
+      map.setView([lat, lng], 16);
+    }
+    if (mapMarker) map.removeLayer(mapMarker);
+    mapMarker = L.marker([lat, lng]).addTo(map);
+    mapMarker.bindPopup('🚑 Ambulance pickup location').openPopup();
+    // Fix map sizing issue
+    setTimeout(() => map.invalidateSize(), 200);
+  }
+
   function getLocation() {
     const btn = document.querySelector('.location-btn');
     btn.textContent = '📍 Detecting...';
@@ -322,6 +350,7 @@
           btn.style.background = '#f0fdf4';
           btn.style.borderColor = '#22c55e';
           btn.style.color = '#15803d';
+          showMap(userLat, userLng);
           fetch('https://nominatim.openstreetmap.org/reverse?lat=' + userLat + '&lon=' + userLng + '&format=json')
             .then(r => r.json()).then(data => {
               if (data) {
