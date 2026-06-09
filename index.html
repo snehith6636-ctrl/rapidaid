@@ -271,7 +271,20 @@
     document.getElementById(pageId).classList.add('active');
   }
 
+  let adminUnlocked = false;
+  const ADMIN_PASSWORD = "admin123";
+
   function switchTab(tab) {
+    // Admin tab requires password
+    if (tab === 'admin' && !adminUnlocked) {
+      const entered = prompt('🔒 Enter admin password to view bookings:');
+      if (entered === null) return; // user cancelled
+      if (entered !== ADMIN_PASSWORD) {
+        alert('❌ Wrong password. Access denied.');
+        return;
+      }
+      adminUnlocked = true;
+    }
     document.getElementById('tab-book').style.display = tab === 'book' ? 'block' : 'none';
     document.getElementById('tab-history').style.display = tab === 'history' ? 'block' : 'none';
     document.getElementById('tab-admin').style.display = tab === 'admin' ? 'block' : 'none';
