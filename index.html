@@ -344,7 +344,10 @@
     msg.textContent = '';
 
     try {
-      window.recaptchaVerifier = new window.RecaptchaVerifier(window.auth, 'recaptcha-container', { size: 'invisible' });
+      // Only create reCAPTCHA once — reuse if it already exists
+      if (!window.recaptchaVerifier) {
+        window.recaptchaVerifier = new window.RecaptchaVerifier(window.auth, 'recaptcha-container', { size: 'invisible' });
+      }
       confirmationResult = await window.signInWithPhoneNumber(window.auth, phone, window.recaptchaVerifier);
       document.getElementById('login-step1').style.display = 'none';
       document.getElementById('login-step2').style.display = 'block';
@@ -353,6 +356,12 @@
       msg.className = 'login-msg error';
       btn.disabled = false;
       btn.textContent = '📱 Send OTP';
+      // Reset reCAPTCHA so user can try again
+      if (window.recaptchaVerifier) {
+        try { window.recaptchaVerifier.clear(); } catch(e){}
+        window.recaptchaVerifier = null;
+        document.getElementById('recaptcha-container').innerHTML = '';
+      }
     }
   }
 
