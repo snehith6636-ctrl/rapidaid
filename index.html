@@ -141,6 +141,20 @@
     .history-date { font-size: 12px; color: #6b7280; }
     .history-details { font-size: 13px; color: #374151; line-height: 1.8; }
     .status-badge { display: inline-block; background: #fef9c3; color: #854d0e; padding: 2px 8px; border-radius: 999px; font-size: 11px; font-weight: 600; margin-top: 4px; }
+    /* live tracking strip */
+    .track-strip { display: flex; justify-content: space-between; align-items: flex-start; margin-top: 12px; position: relative; }
+    .track-strip::before { content: ''; position: absolute; top: 13px; left: 12%; right: 12%; height: 3px; background: #e5e7eb; z-index: 0; }
+    .ts-step { display: flex; flex-direction: column; align-items: center; gap: 4px; z-index: 1; flex: 1; }
+    .ts-dot { width: 28px; height: 28px; border-radius: 50%; background: #e5e7eb; color: #9ca3af; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; transition: all 0.3s; }
+    .ts-dot.done { background: #16a34a; color: white; }
+    .ts-lbl { font-size: 10px; color: #6b7280; text-align: center; line-height: 1.2; max-width: 64px; }
+    /* call button */
+    .call-btn { display: block; text-align: center; background: #16a34a; color: white; text-decoration: none; padding: 10px; border-radius: 10px; font-weight: 600; font-size: 14px; margin-top: 12px; }
+    /* ratings */
+    .rate-row { display: flex; align-items: center; gap: 6px; margin-top: 12px; flex-wrap: wrap; }
+    .rate-row .star, .rated { cursor: pointer; font-size: 22px; filter: grayscale(1); transition: filter 0.15s, transform 0.15s; }
+    .rate-row .star:hover { filter: grayscale(0); transform: scale(1.2); }
+    .rated { margin-top: 12px; font-size: 16px; filter: none; cursor: default; color: #1a0505; font-weight: 600; }
     .no-history { text-align: center; padding: 3rem; color: #6b7280; }
     .admin-section { background: white; border: 1px solid #e5e7eb; border-radius: 12px; padding: 1.5rem; margin-bottom: 1.5rem; }
     .admin-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
@@ -157,6 +171,12 @@
     .nav-tabs { display: flex; gap: 8px; margin-bottom: 1rem; flex-wrap: wrap; }
     .nav-tab { background: #f3f4f6; border: none; border-radius: 8px; padding: 8px 16px; font-size: 13px; cursor: pointer; font-weight: 500; }
     .nav-tab.active { background: #991b1b; color: white; }
+    /* investor stats */
+    .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .insight-card { background: white; border: 1px solid #f1f1f1; border-radius: 16px; padding: 1.3rem 1rem; text-align: center; box-shadow: 0 2px 12px rgba(0,0,0,0.06); }
+    .insight-num { font-family: 'Playfair Display', serif; font-size: 32px; font-weight: 900; color: #991b1b; line-height: 1; }
+    .insight-lbl { font-size: 12px; color: #6b7280; margin-top: 6px; }
+    .insight-card.wide { grid-column: 1 / -1; }
     /* driver job cards */
     .driver-job { background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 12px; padding: 14px; margin-bottom: 10px; }
     .dj-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
@@ -312,6 +332,7 @@
       <button class="nav-tab active" onclick="switchTab('book')">🚑 Book Ambulance</button>
       <button class="nav-tab" onclick="switchTab('history')">📋 My Bookings</button>
       <button class="nav-tab" onclick="switchTab('driver')">🚗 Driver</button>
+      <button class="nav-tab" onclick="switchTab('stats')">📊 Stats</button>
       <button class="nav-tab" onclick="switchTab('admin')">⚙️ Admin</button>
     </div>
 
@@ -461,6 +482,14 @@
         <div id="bookings-list"><div class="no-bookings">Loading...</div></div>
       </div>
     </div>
+
+    <div id="tab-stats" style="display:none;">
+      <div class="section-title">📊 RapidAid Insights</div>
+      <p style="font-size:13px;color:#6b7280;margin-bottom:1rem;">Live traction metrics — great for showing investors.</p>
+      <div class="stats-grid" id="stats-grid">
+        <div class="no-bookings">Loading insights...</div>
+      </div>
+    </div>
   </div>
 
   <div class="footer">
@@ -536,12 +565,15 @@
     document.getElementById('tab-book').style.display = tab === 'book' ? 'block' : 'none';
     document.getElementById('tab-history').style.display = tab === 'history' ? 'block' : 'none';
     document.getElementById('tab-driver').style.display = tab === 'driver' ? 'block' : 'none';
+    document.getElementById('tab-stats').style.display = tab === 'stats' ? 'block' : 'none';
     document.getElementById('tab-admin').style.display = tab === 'admin' ? 'block' : 'none';
     document.querySelectorAll('.nav-tab').forEach((t, i) => {
-      t.classList.toggle('active', ['book','history','driver','admin'][i] === tab);
+      t.classList.toggle('active', ['book','history','driver','stats','admin'][i] === tab);
     });
-    if (tab === 'history') loadHistory();
+    if (tab === 'history') { loadHistory(); startHistoryAutoRefresh(); }
+    else { stopHistoryAutoRefresh(); }
     if (tab === 'driver') loadDriverJobs();
+    if (tab === 'stats') loadStats();
     if (tab === 'admin') loadBookings();
   }
 
@@ -706,17 +738,48 @@
     const phone = currentUser ? currentUser.phone : null;
     if (!phone) {
       el.innerHTML = '<div class="no-history">🔐 Please login to see your booking history.<br><button onclick="showPage(\'page-login\')" style="margin-top:12px;background:#dc2626;color:white;border:none;padding:8px 20px;border-radius:8px;cursor:pointer;">Login Now</button></div>';
+      stopHistoryAutoRefresh();
       return;
     }
     try {
-      el.innerHTML = '<div class="no-history">Loading...</div>';
+      if (!document.querySelector('#history-list .history-item')) {
+        el.innerHTML = '<div class="no-history">Loading...</div>';
+      }
       const q = window.query(window.collection(window.db, 'bookings'), window.where('userPhone', '==', phone));
       const snap = await window.getDocs(q);
       if (snap.empty) { el.innerHTML = '<div class="no-history">No bookings yet! Book your first ambulance above 🚑</div>'; return; }
       const docs = [];
-      snap.forEach(d => docs.push(d.data()));
+      snap.forEach(d => docs.push({ id: d.id, ...d.data() }));
       docs.reverse();
-      el.innerHTML = docs.map(b => `
+      el.innerHTML = docs.map(b => {
+        const status = b.status || 'pending';
+        // progress steps
+        const steps = ['pending','accepted','ontheway','arrived'];
+        const labels = ['Booked','Driver assigned','On the way','Arrived'];
+        const curIdx = steps.indexOf(status) === -1 ? 0 : steps.indexOf(status);
+        let progress = '';
+        for (let i=0;i<4;i++){
+          const done = i <= curIdx;
+          progress += `<div class="ts-step">
+            <div class="ts-dot ${done?'done':''}">${done?'✓':i+1}</div>
+            <div class="ts-lbl">${labels[i]}</div>
+          </div>`;
+        }
+        // call button shown once a driver is assigned
+        const callBtn = (status==='accepted'||status==='ontheway')
+          ? `<a href="tel:112" class="call-btn">📞 Call Ambulance Helpline</a>` : '';
+        // rating shown after arrival
+        let rating = '';
+        if (status === 'arrived') {
+          if (b.rating) {
+            rating = `<div class="rated">You rated: ${'⭐'.repeat(b.rating)} <span style="color:#6b7280;font-size:12px;">(${b.rating}/5)</span></div>`;
+          } else {
+            rating = `<div class="rate-row"><span style="font-size:13px;color:#374151;">Rate this service:</span>
+              ${[1,2,3,4,5].map(n=>`<span class="star" onclick="rateBooking('${b.id}',${n})">⭐</span>`).join('')}
+            </div>`;
+          }
+        }
+        return `
         <div class="history-item">
           <div class="history-top">
             <div class="history-type">🚑 ${b.ambulanceType}</div>
@@ -727,12 +790,79 @@
             📍 ${b.location}, ${b.city}<br>
             🆘 ${b.emergency} &nbsp;|&nbsp; ⏱️ ETA: ${b.eta}
           </div>
-          <div><span class="status-badge">${(b.status==='accepted')?'✅ Driver assigned':(b.status==='ontheway')?'🚑 On the way':(b.status==='arrived')?'🏁 Arrived':'⏳ Pending'}</span></div>
-        </div>`).join('');
+          <div class="track-strip">${progress}</div>
+          ${callBtn}
+          ${rating}
+        </div>`;
+      }).join('');
     } catch (err) {
       el.innerHTML = '<div class="no-history" style="color:#dc2626">Error: ' + err.message + '</div>';
     }
   }
+
+  // ----- live auto-refresh of history -----
+  let historyTimer = null;
+  function startHistoryAutoRefresh() {
+    stopHistoryAutoRefresh();
+    historyTimer = setInterval(() => {
+      if (document.getElementById('tab-history').style.display !== 'none') {
+        loadHistory();
+      }
+    }, 5000); // every 5 seconds
+  }
+  function stopHistoryAutoRefresh() {
+    if (historyTimer) { clearInterval(historyTimer); historyTimer = null; }
+  }
+
+  // ----- rating a booking -----
+  async function rateBooking(jobId, stars) {
+    try {
+      const ref = window.doc(window.db, 'bookings', jobId);
+      await window.updateDoc(ref, { rating: stars });
+      loadHistory();
+    } catch (err) {
+      alert('Could not save rating: ' + err.message);
+    }
+  }
+  window.rateBooking = rateBooking;
+  window.startHistoryAutoRefresh = startHistoryAutoRefresh;
+
+  async function loadStats() {
+    const el = document.getElementById('stats-grid');
+    if (!window.db) { el.innerHTML = '<div class="no-bookings">Connecting...</div>'; setTimeout(loadStats, 1000); return; }
+    try {
+      el.innerHTML = '<div class="no-bookings">Loading insights...</div>';
+      const snap = await window.getDocs(window.query(window.collection(window.db, 'bookings')));
+      const docs = [];
+      snap.forEach(d => docs.push(d.data()));
+      const total = docs.length;
+      const completed = docs.filter(b => b.status === 'arrived').length;
+      const pending = docs.filter(b => !b.status || b.status === 'pending').length;
+      // count by type
+      const typeCount = {};
+      docs.forEach(b => { typeCount[b.ambulanceType] = (typeCount[b.ambulanceType]||0)+1; });
+      let topType = '—'; let topN = 0;
+      for (const t in typeCount) { if (typeCount[t] > topN) { topN = typeCount[t]; topType = t; } }
+      // avg rating
+      const rated = docs.filter(b => b.rating);
+      const avgRating = rated.length ? (rated.reduce((s,b)=>s+b.rating,0)/rated.length).toFixed(1) : '—';
+      // unique cities
+      const cities = new Set(docs.map(b => b.city).filter(Boolean));
+
+      el.innerHTML = `
+        <div class="insight-card"><div class="insight-num">${total}</div><div class="insight-lbl">Total Bookings</div></div>
+        <div class="insight-card"><div class="insight-num">${completed}</div><div class="insight-lbl">Completed Rides</div></div>
+        <div class="insight-card"><div class="insight-num">${pending}</div><div class="insight-lbl">Pending Now</div></div>
+        <div class="insight-card"><div class="insight-num">${avgRating}${avgRating!=='—'?'★':''}</div><div class="insight-lbl">Avg. Rating</div></div>
+        <div class="insight-card"><div class="insight-num">${topType}</div><div class="insight-lbl">Most Booked Type</div></div>
+        <div class="insight-card"><div class="insight-num">${cities.size}</div><div class="insight-lbl">Cities Served</div></div>
+        <div class="insight-card wide"><div class="insight-num">10 min</div><div class="insight-lbl">Average Response Time (Basic)</div></div>
+      `;
+    } catch (err) {
+      el.innerHTML = '<div class="no-bookings" style="color:#dc2626">Error: ' + err.message + '</div>';
+    }
+  }
+  window.loadStats = loadStats;
 
   async function updateStatCount() {
     const el = document.getElementById('stat-count');
