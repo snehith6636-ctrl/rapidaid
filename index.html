@@ -184,6 +184,34 @@
     .hp-info span { font-size: 12px; color: #6b7280; }
     .hp-dist { font-size: 12px; color: #991b1b; font-weight: 600; white-space: nowrap; }
     .hp-nav { background: #16a34a; color: white; text-decoration: none; padding: 7px 14px; border-radius: 8px; font-size: 12px; font-weight: 600; white-space: nowrap; }
+    /* Highway SOS */
+    .sos-hero-btn { background: #dc2626; color: white; border: 1.5px solid #fca5a5; border-radius: 999px; padding: 11px 28px; font-size: 14px; font-weight: 700; cursor: pointer; box-shadow: 0 4px 16px rgba(220,38,38,0.5); animation: sosPulse 1.5s infinite; }
+    @keyframes sosPulse { 0%,100% { box-shadow: 0 4px 16px rgba(220,38,38,0.5); } 50% { box-shadow: 0 4px 28px rgba(220,38,38,0.9); } }
+    .sos-big-btn { display: block; width: 180px; height: 180px; margin: 1rem auto 1.5rem; border-radius: 50%; background: radial-gradient(circle at 50% 40%, #ef4444, #b91c1c); border: none; color: white; cursor: pointer; position: relative; box-shadow: 0 10px 40px rgba(220,38,38,0.5); }
+    .sos-big-btn:active { transform: scale(0.96); }
+    .sos-label { font-family: 'Playfair Display', serif; font-size: 34px; font-weight: 900; line-height: 1.1; position: relative; z-index: 2; }
+    .sos-ring { position: absolute; inset: -6px; border-radius: 50%; border: 3px solid rgba(239,68,68,0.6); animation: sosRing 1.8s ease-out infinite; }
+    @keyframes sosRing { 0% { transform: scale(1); opacity: 0.8; } 100% { transform: scale(1.4); opacity: 0; } }
+    .sos-loc { background: white; border: 1px solid #e5e7eb; border-radius: 12px; padding: 14px; text-align: center; font-size: 13px; color: #374151; margin-bottom: 1.5rem; line-height: 1.6; }
+    .sos-loc.active { border-color: #16a34a; background: #f0fdf4; color: #15803d; font-weight: 500; }
+    .sos-section-label { font-size: 14px; font-weight: 600; color: #1a0505; margin-bottom: 10px; }
+    .sos-dial-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 1.5rem; }
+    .sos-primary-dial { display: flex; align-items: center; gap: 16px; background: linear-gradient(135deg, #b91c1c, #ef4444); color: white; border-radius: 14px; padding: 16px 18px; text-decoration: none; margin-bottom: 12px; box-shadow: 0 6px 20px rgba(220,38,38,0.4); }
+    .spd-num { font-family: 'Playfair Display', serif; font-size: 40px; font-weight: 900; line-height: 1; }
+    .spd-lbl { font-size: 12px; line-height: 1.4; }
+    .sos-dial { background: white; border: 1.5px solid #fecaca; border-radius: 12px; padding: 14px; text-align: center; text-decoration: none; transition: all 0.15s; }
+    .sos-dial:active { background: #fef2f2; }
+    .sd-num { font-family: 'Playfair Display', serif; font-size: 26px; font-weight: 900; color: #dc2626; }
+    .sos-dial.women { border-color: #f9a8d4; }
+    .sos-dial.women .sd-num { color: #be185d; }
+    .sos-dial.child { border-color: #93c5fd; }
+    .sos-dial.child .sd-num { color: #1d4ed8; }
+    .sd-lbl { font-size: 12px; color: #6b7280; margin-top: 2px; }
+    .sos-share-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .sos-share { text-align: center; text-decoration: none; padding: 13px; border-radius: 12px; font-weight: 600; font-size: 13px; color: white; }
+    .sos-share.wa { background: #25D366; }
+    .sos-share.sms { background: #2563eb; }
+    .sos-share.disabled { opacity: 0.5; pointer-events: none; }
     /* investor stats */
     .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
     .insight-card { background: white; border: 1px solid #f1f1f1; border-radius: 16px; padding: 1.3rem 1rem; text-align: center; box-shadow: 0 2px 12px rgba(0,0,0,0.06); }
@@ -217,6 +245,16 @@
     .how-text span { font-size: 13px; color: #6b7280; line-height: 1.5; }
     /* Why us features */
     .why-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 1rem; }
+    /* safety cards */
+    .safe-grid { display: flex; flex-direction: column; gap: 12px; }
+    .safe-card { border-radius: 16px; padding: 1.3rem; border: 1.5px solid; }
+    .safe-card.women { background: linear-gradient(135deg, #fdf2f8, #fce7f3); border-color: #f9a8d4; }
+    .safe-card.child { background: linear-gradient(135deg, #eff6ff, #dbeafe); border-color: #93c5fd; }
+    .safe-icon { font-size: 34px; margin-bottom: 6px; }
+    .safe-title { font-family: 'Playfair Display', serif; font-size: 20px; font-weight: 800; color: #1a0505; margin-bottom: 6px; }
+    .safe-desc { font-size: 13px; color: #374151; line-height: 1.6; margin-bottom: 12px; }
+    .safe-btn { background: #be185d; color: white; border: none; border-radius: 10px; padding: 10px 20px; font-size: 13px; font-weight: 600; cursor: pointer; }
+    .safe-btn.child { background: #1d4ed8; }
     .why-card { background: white; border: 1px solid #f1f1f1; border-radius: 14px; padding: 1.1rem; text-align: center; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
     .why-icon { font-size: 30px; margin-bottom: 6px; }
     .why-title { font-size: 14px; font-weight: 600; color: #1a0505; margin-bottom: 3px; }
@@ -337,8 +375,9 @@
       <button class="book-btn" onclick="document.getElementById('book-section').scrollIntoView({behavior:'smooth'})">
         🚑 Book Now — It's Free
       </button>
-      <div style="margin-top:14px;">
+      <div style="margin-top:14px; display:flex; gap:10px; justify-content:center; flex-wrap:wrap;">
         <button class="help-near-btn" onclick="switchTab('help')">🏥 Find Help Near Me</button>
+        <button class="sos-hero-btn" onclick="switchTab('sos')">🆘 Highway SOS</button>
       </div>
     </div>
   </div>
@@ -347,6 +386,7 @@
     <div class="nav-tabs">
       <button class="nav-tab active" onclick="switchTab('book')">🚑 Book Ambulance</button>
       <button class="nav-tab" onclick="switchTab('help')">🏥 Find Help Near</button>
+      <button class="nav-tab" onclick="switchTab('sos')">🆘 Highway SOS</button>
       <button class="nav-tab" onclick="switchTab('history')">📋 My Bookings</button>
       <button class="nav-tab" onclick="switchTab('driver')">🚗 Driver</button>
       <button class="nav-tab" onclick="switchTab('stats')">📊 Stats</button>
@@ -466,6 +506,25 @@
         </div>
       </div>
 
+      <!-- SAFETY FOR EVERYONE -->
+      <div class="how-section">
+        <div class="section-title">Safe for everyone 💗</div>
+        <div class="safe-grid">
+          <div class="safe-card women">
+            <div class="safe-icon">👩</div>
+            <div class="safe-title">Women's Safety</div>
+            <div class="safe-desc">Dedicated women's helplines (1091 & 181) built in. Share your live location with family in one tap. Your data is private and protected.</div>
+            <button class="safe-btn" onclick="switchTab('sos')">🆘 Open Safety SOS</button>
+          </div>
+          <div class="safe-card child">
+            <div class="safe-icon">🧒</div>
+            <div class="safe-title">Child Care</div>
+            <div class="safe-desc">Child emergency helpline (1098) and quick access to nearby children's hospitals for paediatric emergencies.</div>
+            <button class="safe-btn child" onclick="switchTab('help')">🏥 Find Children's Hospitals</button>
+          </div>
+        </div>
+      </div>
+
       <!-- CTA BANNER -->
       <div class="cta-banner">
         <h3>Every second counts ⏱️</h3>
@@ -505,12 +564,56 @@
       <p style="font-size:13px;color:#6b7280;margin-bottom:1rem;">Hospitals, clinics, pharmacies & medical shops near your location.</p>
       <div class="help-filters">
         <button class="hf-btn active" onclick="findHelp('hospital', this)">🏥 Hospitals</button>
+        <button class="hf-btn" onclick="findHelp('children', this)">🧒 Children's</button>
         <button class="hf-btn" onclick="findHelp('clinic', this)">🩺 Clinics</button>
         <button class="hf-btn" onclick="findHelp('pharmacy', this)">💊 Pharmacies</button>
         <button class="hf-btn" onclick="findHelp('all', this)">🔍 All</button>
       </div>
       <div id="help-map"></div>
       <div id="help-list"><div class="no-bookings">Tap a category above and allow location to find help near you.</div></div>
+    </div>
+
+    <div id="tab-sos" style="display:none;">
+      <div class="section-title">🆘 Highway Emergency SOS</div>
+      <p style="font-size:13px;color:#6b7280;margin-bottom:1rem;">For accidents on highways. Tap SOS to capture your exact location, then call for help or share your location instantly.</p>
+
+      <button class="sos-big-btn" onclick="triggerSOS()">
+        <span class="sos-ring"></span>
+        <span class="sos-label">🆘<br>SOS</span>
+      </button>
+
+      <div id="sos-location" class="sos-loc">Tap the SOS button to capture your location</div>
+
+      <div class="sos-section-label">📞 Emergency Helplines — tap to call</div>
+      <a href="tel:112" class="sos-primary-dial">
+        <div class="spd-num">112</div>
+        <div class="spd-lbl">All-in-One Emergency (Police · Ambulance · Fire)<br><span style="opacity:0.8;">Govt. recommended — auto GPS location</span></div>
+      </a>
+      <div class="sos-dial-grid">
+        <a href="tel:108" class="sos-dial"><div class="sd-num">108</div><div class="sd-lbl">Ambulance</div></a>
+        <a href="tel:1033" class="sos-dial"><div class="sd-num">1033</div><div class="sd-lbl">Highway Help (NHAI)</div></a>
+        <a href="tel:1073" class="sos-dial"><div class="sd-num">1073</div><div class="sd-lbl">Road Accident</div></a>
+        <a href="tel:100" class="sos-dial"><div class="sd-num">100</div><div class="sd-lbl">Police</div></a>
+      </div>
+
+      <div class="sos-section-label">👩 Women's Safety Helplines</div>
+      <div class="sos-dial-grid">
+        <a href="tel:1091" class="sos-dial women"><div class="sd-num">1091</div><div class="sd-lbl">Women Helpline</div></a>
+        <a href="tel:181" class="sos-dial women"><div class="sd-num">181</div><div class="sd-lbl">Women (Domestic Abuse)</div></a>
+      </div>
+
+      <div class="sos-section-label">🧒 Child Care & Child Emergency</div>
+      <div class="sos-dial-grid">
+        <a href="tel:1098" class="sos-dial child"><div class="sd-num">1098</div><div class="sd-lbl">Child Helpline</div></a>
+        <a href="tel:108" class="sos-dial child"><div class="sd-num">108</div><div class="sd-lbl">Child Medical Emergency</div></a>
+      </div>
+
+      <div class="sos-section-label">📤 Share your location</div>
+      <div class="sos-share-grid">
+        <a id="sos-wa" href="#" target="_blank" class="sos-share wa">📱 Share on WhatsApp</a>
+        <a id="sos-sms" href="#" class="sos-share sms">💬 Send via SMS</a>
+      </div>
+      <p style="font-size:12px;color:#9ca3af;margin-top:10px;text-align:center;">First tap the SOS button above to capture your location, then share.</p>
     </div>
 
     <div id="tab-stats" style="display:none;">
@@ -594,12 +697,13 @@
     }
     document.getElementById('tab-book').style.display = tab === 'book' ? 'block' : 'none';
     document.getElementById('tab-help').style.display = tab === 'help' ? 'block' : 'none';
+    document.getElementById('tab-sos').style.display = tab === 'sos' ? 'block' : 'none';
     document.getElementById('tab-history').style.display = tab === 'history' ? 'block' : 'none';
     document.getElementById('tab-driver').style.display = tab === 'driver' ? 'block' : 'none';
     document.getElementById('tab-stats').style.display = tab === 'stats' ? 'block' : 'none';
     document.getElementById('tab-admin').style.display = tab === 'admin' ? 'block' : 'none';
     document.querySelectorAll('.nav-tab').forEach((t, i) => {
-      t.classList.toggle('active', ['book','help','history','driver','stats','admin'][i] === tab);
+      t.classList.toggle('active', ['book','help','sos','history','driver','stats','admin'][i] === tab);
     });
     if (tab === 'history') { loadHistory(); startHistoryAutoRefresh(); }
     else { stopHistoryAutoRefresh(); }
@@ -927,6 +1031,7 @@
         // build overpass query
         let filter = '';
         if (type === 'hospital') filter = 'node["amenity"="hospital"](around:4000,'+lat+','+lng+');';
+        else if (type === 'children') filter = 'node["amenity"="hospital"]["healthcare:speciality"~"paediatrics|child"](around:8000,'+lat+','+lng+');node["amenity"="hospital"]["name"~"[Cc]hild|[Cc]hildren|[Pp]aediatric|[Pp]ediatric"](around:8000,'+lat+','+lng+');';
         else if (type === 'clinic') filter = 'node["amenity"="clinic"](around:4000,'+lat+','+lng+');node["amenity"="doctors"](around:4000,'+lat+','+lng+');';
         else if (type === 'pharmacy') filter = 'node["amenity"="pharmacy"](around:4000,'+lat+','+lng+');';
         else filter = 'node["amenity"="hospital"](around:4000,'+lat+','+lng+');node["amenity"="clinic"](around:4000,'+lat+','+lng+');node["amenity"="pharmacy"](around:4000,'+lat+','+lng+');node["amenity"="doctors"](around:4000,'+lat+','+lng+');';
@@ -995,6 +1100,70 @@
     );
   }
   window.findHelp = findHelp;
+
+  // ----- Highway SOS -----
+  function triggerSOS() {
+    const locEl = document.getElementById('sos-location');
+    locEl.textContent = '📍 Capturing your exact location...';
+    locEl.classList.remove('active');
+
+    if (!navigator.geolocation) {
+      locEl.textContent = '❌ GPS not supported. Please call 112 directly.';
+      return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        const lat = pos.coords.latitude.toFixed(6);
+        const lng = pos.coords.longitude.toFixed(6);
+        const mapUrl = 'https://www.google.com/maps?q=' + lat + ',' + lng;
+
+        locEl.innerHTML = '✅ <b>Location captured!</b><br>📍 ' + lat + ', ' + lng + '<br><a href="' + mapUrl + '" target="_blank" style="color:#15803d;text-decoration:underline;">View on map</a>';
+        locEl.classList.add('active');
+
+        // Build emergency message
+        const msg = '🆘 EMERGENCY! I need help. There has been an accident.\n\n' +
+                    '📍 My location: ' + mapUrl + '\n' +
+                    'Coordinates: ' + lat + ', ' + lng + '\n\n' +
+                    'Please send help immediately! (Sent via RapidAid)';
+
+        // Wire up share buttons
+        const waBtn = document.getElementById('sos-wa');
+        const smsBtn = document.getElementById('sos-sms');
+        waBtn.href = 'https://wa.me/?text=' + encodeURIComponent(msg);
+        smsBtn.href = 'sms:?body=' + encodeURIComponent(msg);
+        waBtn.classList.remove('disabled');
+        smsBtn.classList.remove('disabled');
+
+        // also save an SOS alert to the database so admin sees it
+        try {
+          if (window.db) {
+            window.addDoc(window.collection(window.db, 'bookings'), {
+              name: 'HIGHWAY SOS ALERT',
+              phone: currentUser ? currentUser.phone : 'unknown',
+              location: 'Highway emergency — ' + lat + ', ' + lng,
+              city: 'Highway',
+              emergency: 'Accident (SOS)',
+              ambulanceType: 'Basic',
+              eta: '10 minutes',
+              latitude: parseFloat(lat),
+              longitude: parseFloat(lng),
+              status: 'pending',
+              userPhone: currentUser ? currentUser.phone : 'unknown',
+              isSOS: true,
+              timestamp: new Date().toISOString(),
+              bookedAt: new Date().toLocaleString('en-IN')
+            });
+          }
+        } catch(e) {}
+      },
+      () => {
+        locEl.textContent = '❌ Location access denied. Please allow location, or call 112 directly now.';
+      },
+      { enableHighAccuracy: true, timeout: 10000 }
+    );
+  }
+  window.triggerSOS = triggerSOS;
 
   async function updateStatCount() {
     const el = document.getElementById('stat-count');
