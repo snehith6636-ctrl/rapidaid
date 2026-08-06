@@ -283,6 +283,28 @@
     .map-label { font-size: 13px; color: #6b7280; margin-bottom: 6px; font-weight: 500; }
     .wa-btn { display: inline-block; margin-top: 8px; background: #25D366; color: white; text-decoration: none; padding: 7px 16px; border-radius: 8px; font-size: 13px; font-weight: 600; }
     .wa-btn:hover { background: #1da851; }
+    /* Live location sharing (SOS -> family) */
+    .livetrack-box { background: white; border: 1.5px solid #e5e7eb; border-radius: 14px; padding: 1.2rem; margin: 1.5rem 0; }
+    .livetrack-box.on { border-color: #16a34a; background: #f0fdf4; }
+    .lt-status { display: flex; align-items: center; gap: 8px; font-size: 13px; color: #374151; margin-bottom: 10px; }
+    .lt-dot { width: 10px; height: 10px; border-radius: 50%; background: #d1d5db; }
+    .lt-dot.live { background: #16a34a; animation: sosPulse 1.5s infinite; }
+    .lt-btn { width: 100%; border: none; border-radius: 10px; padding: 13px; font-size: 14px; font-weight: 700; cursor: pointer; color: white; background: #991b1b; margin-bottom: 8px; }
+    .lt-btn.stop { background: #6b7280; }
+    .lt-link-row { display: flex; gap: 8px; margin-top: 10px; }
+    .lt-link-row input { flex: 1; padding: 10px 12px; border: 1.5px solid #e5e7eb; border-radius: 8px; font-size: 12px; background: #f9fafb; color: #374151; }
+    .lt-link-row button { background: #f3f4f6; border: none; border-radius: 8px; padding: 0 14px; font-size: 12px; font-weight: 600; cursor: pointer; }
+    .lt-share-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
+    /* Family tracking view (opened via shared link) */
+    .track-page { max-width: 480px; margin: 0 auto; padding: 1.5rem; min-height: 100vh; background: #f9fafb; }
+    .track-header { text-align: center; margin-bottom: 1rem; }
+    .track-header h2 { font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 800; color: #1a0505; }
+    .track-header p { font-size: 13px; color: #6b7280; margin-top: 4px; }
+    #track-map { height: 320px; width: 100%; border-radius: 14px; margin-bottom: 1rem; border: 1px solid #e5e7eb; }
+    .track-info { background: white; border: 1px solid #e5e7eb; border-radius: 14px; padding: 1.2rem; text-align: center; }
+    .track-updated { font-size: 12px; color: #6b7280; margin-top: 6px; }
+    .track-live-pill { display: inline-flex; align-items: center; gap: 6px; background: #f0fdf4; color: #15803d; border: 1px solid #86efac; border-radius: 999px; padding: 5px 14px; font-size: 12px; font-weight: 600; margin-bottom: 10px; }
+    .track-live-pill .lt-dot.live { background: #16a34a; }
   </style>
 </head>
 <body>
@@ -628,6 +650,23 @@
         <a id="sos-sms" href="#" class="sos-share sms">💬 Send via SMS</a>
       </div>
       <p style="font-size:12px;color:#9ca3af;margin-top:10px;text-align:center;">First tap the SOS button above to capture your location, then share.</p>
+
+      <div class="livetrack-box" id="livetrack-box">
+        <div class="sos-section-label">📡 Live Location Tracking for Family</div>
+        <div class="lt-status"><div class="lt-dot" id="lt-dot"></div><span id="lt-status-text">Not sharing your location right now.</span></div>
+        <button class="lt-btn" id="lt-toggle-btn" onclick="toggleLiveTracking()">📡 Start Sharing Live Location</button>
+        <div id="lt-link-area" style="display:none;">
+          <div class="lt-link-row">
+            <input type="text" id="lt-link" readonly />
+            <button onclick="copyTrackLink()">Copy</button>
+          </div>
+          <div class="lt-share-grid">
+            <a id="lt-wa" href="#" target="_blank" class="sos-share wa">📱 Send on WhatsApp</a>
+            <a id="lt-sms" href="#" class="sos-share sms">💬 Send via SMS</a>
+          </div>
+        </div>
+        <p style="font-size:12px;color:#9ca3af;margin-top:10px;">Your family member opens this link and sees your live location update automatically until you stop sharing.</p>
+      </div>
     </div>
 
     <div id="tab-stats" style="display:none;">
@@ -646,9 +685,28 @@
   </div>
 </div>
 
+<!-- LIVE TRACKING PAGE (opened by family via shared link) -->
+<div class="page" id="page-track">
+  <div class="track-page">
+    <div class="track-header">
+      <h2>🆘 Live Emergency Location</h2>
+      <p>This page updates automatically while the person is sharing their location.</p>
+    </div>
+    <div id="track-live-pill-wrap" style="text-align:center;">
+      <div class="track-live-pill"><div class="lt-dot live"></div><span id="track-pill-text">Connecting...</span></div>
+    </div>
+    <div id="track-map"></div>
+    <div class="track-info">
+      <div id="track-coords" style="font-size:14px;font-weight:600;color:#1a0505;">Waiting for location...</div>
+      <div class="track-updated" id="track-updated"></div>
+      <a href="tel:112" class="call-btn" style="margin-top:14px;">📞 Call Emergency Helpline (112)</a>
+    </div>
+  </div>
+</div>
+
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-app.js";
-  import { getFirestore, collection, addDoc, getDocs, query, where, doc, updateDoc } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js";
+  import { getFirestore, collection, addDoc, getDocs, query, where, doc, updateDoc, setDoc, getDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyAIn53Fc1_4STM0E1El-4SRPXRnTlvYeqg",
@@ -670,8 +728,12 @@
   window.where = where;
   window.doc = doc;
   window.updateDoc = updateDoc;
+  window.setDoc = setDoc;
+  window.getDoc = getDoc;
+  window.onSnapshot = onSnapshot;
   window.loadBookings();
   setTimeout(() => { if(window.updateStatCount) window.updateStatCount(); }, 1500);
+  if (window.initTrackPageIfNeeded) window.initTrackPageIfNeeded();
 </script>
 
 <script>
@@ -1297,6 +1359,135 @@
   window.selectType = selectType;
   window.getLocation = getLocation;
   window.bookAmbulance = bookAmbulance;
+
+  // ----- Live Location Sharing (accident victim -> family) -----
+  let liveTrackId = null;
+  let liveWatchId = null;
+  let liveTrackActive = false;
+
+  function toggleLiveTracking() {
+    if (liveTrackActive) stopLiveTracking(); else startLiveTracking();
+  }
+
+  function startLiveTracking() {
+    if (!navigator.geolocation) { alert('❌ GPS not supported on this device.'); return; }
+    if (!window.db || !window.setDoc) { alert('Still connecting, please try again in a moment.'); return; }
+
+    liveTrackId = 'lt_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+    liveTrackActive = true;
+
+    document.getElementById('lt-status-text').textContent = '📍 Getting your location...';
+    document.getElementById('lt-dot').classList.add('live');
+    document.getElementById('livetrack-box').classList.add('on');
+    document.getElementById('lt-toggle-btn').textContent = '⏹ Stop Sharing Live Location';
+    document.getElementById('lt-toggle-btn').classList.add('stop');
+
+    liveWatchId = navigator.geolocation.watchPosition(
+      async (pos) => {
+        const lat = pos.coords.latitude;
+        const lng = pos.coords.longitude;
+        try {
+          await window.setDoc(window.doc(window.db, 'liveTracking', liveTrackId), {
+            lat, lng,
+            name: currentUser ? currentUser.name : 'RapidAid user',
+            active: true,
+            updatedAt: new Date().toISOString()
+          });
+        } catch (e) {}
+
+        document.getElementById('lt-status-text').textContent = '🟢 Live — sharing your location with family';
+
+        const link = window.location.href.split('#')[0] + '#track=' + liveTrackId;
+        const linkInput = document.getElementById('lt-link');
+        if (!linkInput.value) {
+          linkInput.value = link;
+          document.getElementById('lt-link-area').style.display = 'block';
+          const msg = '🆘 I need help — please track my live location here: ' + link;
+          document.getElementById('lt-wa').href = 'https://wa.me/?text=' + encodeURIComponent(msg);
+          document.getElementById('lt-sms').href = 'sms:?body=' + encodeURIComponent(msg);
+        }
+      },
+      () => {
+        document.getElementById('lt-status-text').textContent = '❌ Location access denied. Please allow location to share.';
+        liveTrackActive = false;
+        document.getElementById('lt-toggle-btn').textContent = '📡 Start Sharing Live Location';
+        document.getElementById('lt-toggle-btn').classList.remove('stop');
+        document.getElementById('lt-dot').classList.remove('live');
+      },
+      { enableHighAccuracy: true, maximumAge: 5000, timeout: 15000 }
+    );
+  }
+
+  async function stopLiveTracking() {
+    liveTrackActive = false;
+    if (liveWatchId !== null) { navigator.geolocation.clearWatch(liveWatchId); liveWatchId = null; }
+    document.getElementById('lt-status-text').textContent = 'Not sharing your location right now.';
+    document.getElementById('lt-dot').classList.remove('live');
+    document.getElementById('livetrack-box').classList.remove('on');
+    document.getElementById('lt-toggle-btn').textContent = '📡 Start Sharing Live Location';
+    document.getElementById('lt-toggle-btn').classList.remove('stop');
+    document.getElementById('lt-link-area').style.display = 'none';
+    document.getElementById('lt-link').value = '';
+    if (liveTrackId && window.db && window.setDoc) {
+      try { await window.setDoc(window.doc(window.db, 'liveTracking', liveTrackId), { active: false }, { merge: true }); } catch (e) {}
+    }
+    liveTrackId = null;
+  }
+
+  function copyTrackLink() {
+    const input = document.getElementById('lt-link');
+    if (!input.value) return;
+    input.select();
+    if (navigator.clipboard) navigator.clipboard.writeText(input.value).catch(() => {});
+  }
+
+  window.toggleLiveTracking = toggleLiveTracking;
+  window.copyTrackLink = copyTrackLink;
+
+  // ----- Family-facing live tracking view (opened via shared link) -----
+  let trackMap = null;
+  let trackMarker = null;
+
+  function initTrackPageIfNeeded() {
+    const hash = window.location.hash || '';
+    const match = hash.match(/track=([a-zA-Z0-9_]+)/);
+    if (!match) return;
+    const trackId = match[1];
+    showPage('page-track');
+
+    if (!window.db || !window.onSnapshot) { setTimeout(initTrackPageIfNeeded, 500); return; }
+
+    const pillText = document.getElementById('track-pill-text');
+    const coordsEl = document.getElementById('track-coords');
+    const updatedEl = document.getElementById('track-updated');
+
+    window.onSnapshot(window.doc(window.db, 'liveTracking', trackId), (snap) => {
+      if (!snap.exists()) {
+        pillText.textContent = '⚪ No active tracking session found';
+        coordsEl.textContent = 'This tracking link is not active.';
+        return;
+      }
+      const data = snap.data();
+      pillText.textContent = data.active === false ? '⚪ Sharing has stopped' : '🟢 Live — updating automatically';
+      if (typeof data.lat === 'number' && typeof data.lng === 'number') {
+        coordsEl.textContent = (data.name || 'Person') + ' — ' + data.lat.toFixed(5) + ', ' + data.lng.toFixed(5);
+        updatedEl.textContent = data.updatedAt ? 'Last updated: ' + new Date(data.updatedAt).toLocaleTimeString('en-IN') : '';
+
+        if (!trackMap) {
+          trackMap = L.map('track-map').setView([data.lat, data.lng], 16);
+          L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '© OpenStreetMap', maxZoom: 19 }).addTo(trackMap);
+        } else {
+          trackMap.setView([data.lat, data.lng], trackMap.getZoom());
+        }
+        if (trackMarker) trackMap.removeLayer(trackMarker);
+        trackMarker = L.marker([data.lat, data.lng]).addTo(trackMap).bindPopup((data.name || 'Person') + '\'s location').openPopup();
+        setTimeout(() => trackMap.invalidateSize(), 200);
+      }
+    }, () => {
+      pillText.textContent = '❌ Could not connect to tracking session';
+    });
+  }
+  window.initTrackPageIfNeeded = initTrackPageIfNeeded;
 </script>
 
 <script>
