@@ -305,6 +305,20 @@
     .track-updated { font-size: 12px; color: #6b7280; margin-top: 6px; }
     .track-live-pill { display: inline-flex; align-items: center; gap: 6px; background: #f0fdf4; color: #15803d; border: 1px solid #86efac; border-radius: 999px; padding: 5px 14px; font-size: 12px; font-weight: 600; margin-bottom: 10px; }
     .track-live-pill .lt-dot.live { background: #16a34a; }
+    /* cancel booking */
+    .cancel-btn { display: block; width: 100%; text-align: center; background: #f9fafb; border: 1.5px solid #fca5a5; color: #dc2626; padding: 9px; border-radius: 10px; font-weight: 600; font-size: 13px; margin-top: 10px; cursor: pointer; }
+    .cancel-btn:hover { background: #fef2f2; }
+    .cancelled-badge { display: inline-block; background: #f3f4f6; color: #6b7280; padding: 4px 12px; border-radius: 999px; font-size: 12px; font-weight: 600; margin-top: 10px; }
+    /* terms & privacy modal */
+    .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 50; align-items: center; justify-content: center; padding: 1.5rem; }
+    .modal-overlay.show { display: flex; }
+    .modal-box { background: white; border-radius: 16px; padding: 1.8rem; max-width: 520px; max-height: 80vh; overflow-y: auto; }
+    .modal-box h3 { font-family: 'Playfair Display', serif; font-size: 20px; margin-bottom: 0.8rem; color: #1a0505; }
+    .modal-box h4 { font-size: 14px; margin: 1rem 0 0.3rem; color: #991b1b; }
+    .modal-box p, .modal-box li { font-size: 13px; color: #374151; line-height: 1.7; }
+    .modal-close-btn { margin-top: 1.2rem; width: 100%; background: #991b1b; color: white; border: none; border-radius: 10px; padding: 11px; font-weight: 600; cursor: pointer; }
+    .footer-links { margin-top: 8px; font-size: 12px; }
+    .footer-links a { color: #f87171; text-decoration: underline; cursor: pointer; }
   </style>
 </head>
 <body>
@@ -682,6 +696,32 @@
     <div class="brand">🚑 RapidAid</div>
     <p>© 2026 RapidAid. All rights reserved. Built in India 🇮🇳<br>
     Founder: Ram Snehith &nbsp;|&nbsp; Emergency: 112 &nbsp;|&nbsp; rapidaidlive@gmail.com</p>
+    <div class="footer-links"><a onclick="showPolicy()">Terms & Privacy Policy</a></div>
+  </div>
+</div>
+
+<!-- TERMS & PRIVACY MODAL -->
+<div class="modal-overlay" id="policy-modal">
+  <div class="modal-box">
+    <h3>Terms & Privacy Policy</h3>
+    <p>RapidAid is currently a prototype service. By using this app you agree to the following:</p>
+    <h4>What we collect</h4>
+    <ul>
+      <li>Your name and phone number, to coordinate ambulance dispatch</li>
+      <li>Your GPS location, only when you tap "Auto-detect," "SOS," or "Share Live Location"</li>
+      <li>Booking details you enter (emergency type, address, ambulance type)</li>
+    </ul>
+    <h4>How we use it</h4>
+    <ul>
+      <li>To connect you with an ambulance and share your pickup details with drivers/admins</li>
+      <li>Live-tracking links you generate are only accessible to people you share the link with</li>
+      <li>We do not sell your data to third parties</li>
+    </ul>
+    <h4>Prototype notice</h4>
+    <p>RapidAid is in early development. Real ambulance dispatch is not yet guaranteed on every booking — for genuine emergencies, always also call 112 directly.</p>
+    <h4>Contact</h4>
+    <p>Questions about your data: rapidaidlive@gmail.com</p>
+    <button class="modal-close-btn" onclick="hidePolicy()">Close</button>
   </div>
 </div>
 
@@ -887,6 +927,18 @@
       return;
     }
 
+    const phoneDigits = phone.replace(/\D/g, '');
+    if (phoneDigits.length < 10) {
+      statusEl.textContent = '⚠️ Please enter a valid 10-digit phone number.';
+      statusEl.className = 'status-msg error';
+      return;
+    }
+    if (name.length < 2) {
+      statusEl.textContent = '⚠️ Please enter the patient\'s full name.';
+      statusEl.className = 'status-msg error';
+      return;
+    }
+
     btn.disabled = true;
     btn.textContent = '⏳ Booking...';
     const bookedAt = new Date().toLocaleString('en-IN');
@@ -979,6 +1031,10 @@
         // call button shown once a driver is assigned
         const callBtn = (status==='accepted'||status==='ontheway')
           ? `<a href="tel:112" class="call-btn">📞 Call Ambulance Helpline</a>` : '';
+        // cancel button for bookings that haven't arrived or been cancelled yet
+        const cancelBtn = (status==='pending'||status==='accepted')
+          ? `<button class="cancel-btn" onclick="cancelBooking('${b.id}')">✕ Cancel Booking</button>` : '';
+        const cancelledBadge = status==='cancelled' ? `<div class="cancelled-badge">✕ Cancelled</div>` : '';
         // rating shown after arrival
         let rating = '';
         if (status === 'arrived') {
@@ -1001,8 +1057,9 @@
             📍 ${b.location}, ${b.city}<br>
             🆘 ${b.emergency} &nbsp;|&nbsp; ⏱️ ETA: ${b.eta}
           </div>
-          <div class="track-strip">${progress}</div>
+          ${status==='cancelled' ? cancelledBadge : `<div class="track-strip">${progress}</div>`}
           ${callBtn}
+          ${cancelBtn}
           ${rating}
         </div>`;
       }).join('');
@@ -1035,7 +1092,25 @@
       alert('Could not save rating: ' + err.message);
     }
   }
+  // ----- cancel a booking -----
+  async function cancelBooking(jobId) {
+    if (!confirm('Cancel this ambulance booking?')) return;
+    try {
+      const ref = window.doc(window.db, 'bookings', jobId);
+      await window.updateDoc(ref, { status: 'cancelled' });
+      loadHistory();
+    } catch (err) {
+      alert('Could not cancel: ' + err.message);
+    }
+  }
+  window.cancelBooking = cancelBooking;
   window.rateBooking = rateBooking;
+
+  // ----- Terms & Privacy modal -----
+  function showPolicy() { document.getElementById('policy-modal').classList.add('show'); }
+  function hidePolicy() { document.getElementById('policy-modal').classList.remove('show'); }
+  window.showPolicy = showPolicy;
+  window.hidePolicy = hidePolicy;
   window.startHistoryAutoRefresh = startHistoryAutoRefresh;
 
   async function loadStats() {
@@ -1312,12 +1387,14 @@
         const statusLabel = status === 'pending' ? '⏳ Pending'
           : status === 'accepted' ? '✅ Accepted'
           : status === 'ontheway' ? '🚑 On the way'
-          : status === 'arrived' ? '🏁 Arrived' : status;
+          : status === 'arrived' ? '🏁 Arrived'
+          : status === 'cancelled' ? '✕ Cancelled by patient' : status;
         const mapLink = b.latitude ? `<a href="https://www.google.com/maps?q=${b.latitude},${b.longitude}" target="_blank" class="dj-btn map">📍 Navigate</a>` : '';
         let actionBtns = '';
         if (status === 'pending') actionBtns = `<button class="dj-btn accept" onclick="updateJobStatus('${b.id}','accepted')">Accept Job</button>`;
         else if (status === 'accepted') actionBtns = `<button class="dj-btn way" onclick="updateJobStatus('${b.id}','ontheway')">Start — On the way</button>`;
         else if (status === 'ontheway') actionBtns = `<button class="dj-btn arrived" onclick="updateJobStatus('${b.id}','arrived')">Mark as Arrived</button>`;
+        else if (status === 'cancelled') actionBtns = `<button class="dj-btn" disabled>✕ Cancelled</button>`;
         else actionBtns = `<button class="dj-btn" disabled>✅ Completed</button>`;
         return `
         <div class="driver-job">
